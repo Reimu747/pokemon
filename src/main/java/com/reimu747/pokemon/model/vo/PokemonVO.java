@@ -1,7 +1,5 @@
 package com.reimu747.pokemon.model.vo;
 
-import com.reimu747.pokemon.model.enums.NatureEnum;
-import lombok.Builder;
 import lombok.Data;
 
 /**

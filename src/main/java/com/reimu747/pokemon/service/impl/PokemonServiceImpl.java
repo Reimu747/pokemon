@@ -1,5 +1,6 @@
 package com.reimu747.pokemon.service.impl;
 
+import com.reimu747.pokemon.dao.PokemonDao;
 import com.reimu747.pokemon.dao.TypeDao;
 import com.reimu747.pokemon.model.enums.AbilityEnum;
 import com.reimu747.pokemon.model.enums.NatureEnum;
@@ -22,6 +23,8 @@ public class PokemonServiceImpl implements PokemonService
 {
     @Autowired
     private TypeDao typeDao;
+    @Autowired
+    private PokemonDao pokemonDao;
 
     /**
      * 脱壳忍者全国ID，Hp能力值
@@ -41,6 +44,12 @@ public class PokemonServiceImpl implements PokemonService
      */
     private static final int MIN_IVS = 0;
     private static final int MAX_IVS = 31;
+
+    @Override
+    public PokemonVO getPokemon(String name)
+    {
+        return pokemonDao.getPokemonVOByName(name);
+    }
 
     @Override
     public StatsVO getStats(PokemonVO pokemonVO, IvsVO ivsVO, BsVO bsVO, int level, NatureEnum natureEnum)
@@ -89,16 +98,10 @@ public class PokemonServiceImpl implements PokemonService
 
         // 再计算性格修正后的能力值
         // 需要增强的能力值
-        incrase.ifPresent(abilityEnum ->
-        {
-            natureUpdate(res, abilityEnum, INCRASE_RATE);
-        });
+        incrase.ifPresent(abilityEnum -> natureUpdate(res, abilityEnum, INCRASE_RATE));
 
         // 需要削弱的能力值
-        decrase.ifPresent(abilityEnum ->
-        {
-            natureUpdate(res, abilityEnum, DECRASE_RATE);
-        });
+        decrase.ifPresent(abilityEnum -> natureUpdate(res, abilityEnum, DECRASE_RATE));
 
         return res;
     }

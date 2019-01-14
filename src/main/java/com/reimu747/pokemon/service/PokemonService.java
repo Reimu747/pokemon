@@ -9,6 +9,14 @@ import com.reimu747.pokemon.model.enums.NatureEnum;
 public interface PokemonService
 {
     /**
+     * 通过pokemon名称获取对应的pokemon
+     *
+     * @param name 名称
+     * @return 对应的pokemon
+     */
+    PokemonVO getPokemon(String name);
+
+    /**
      * 计算pokemon能力值
      *
      * @param pokemonVO  pokemonVO 含有种族值
