@@ -9,6 +9,8 @@ import com.reimu747.pokemon.service.PokemonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -49,6 +51,23 @@ public class PokemonServiceImpl implements PokemonService
     public PokemonVO getPokemon(String name)
     {
         return pokemonDao.getPokemonVOByName(name);
+    }
+
+    @Override
+    public List<SimplePokemonVO> getAllPokemon()
+    {
+        List<PokemonVO> list = pokemonDao.getAllPokemon();
+        List<SimplePokemonVO> res = new ArrayList<>();
+
+        for (PokemonVO pokemon : list)
+        {
+            SimplePokemonVO simplePokemon = SimplePokemonVO.builder().build();
+            simplePokemon.setId(pokemon.getNationalPokedexId());
+            simplePokemon.setName(pokemon.getName());
+            res.add(simplePokemon);
+        }
+
+        return res;
     }
 
     @Override

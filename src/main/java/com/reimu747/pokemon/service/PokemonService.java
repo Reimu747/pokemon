@@ -1,7 +1,9 @@
 package com.reimu747.pokemon.service;
 
-import com.reimu747.pokemon.model.vo.*;
 import com.reimu747.pokemon.model.enums.NatureEnum;
+import com.reimu747.pokemon.model.vo.*;
+
+import java.util.List;
 
 /**
  * @author Reimu747
@@ -15,6 +17,13 @@ public interface PokemonService
      * @return 对应的pokemon
      */
     PokemonVO getPokemon(String name);
+
+    /**
+     * 获取所有pokemon列表，仅包含全国id和名称
+     *
+     * @return 列表
+     */
+    List<SimplePokemonVO> getAllPokemon();
 
     /**
      * 计算pokemon能力值
