@@ -1,15 +1,18 @@
 package com.reimu747.pokemon.controller;
 
 import com.reimu747.pokemon.model.Result;
+import com.reimu747.pokemon.model.enums.AbilityEnum;
 import com.reimu747.pokemon.model.enums.ErrorCodeEnum;
-import com.reimu747.pokemon.model.vo.PokemonVO;
-import com.reimu747.pokemon.model.vo.SimplePokemonVO;
+import com.reimu747.pokemon.model.enums.NatureEnum;
+import com.reimu747.pokemon.model.request.PokemonRequest;
+import com.reimu747.pokemon.model.response.StatsResponse;
+import com.reimu747.pokemon.model.vo.*;
 import com.reimu747.pokemon.service.PokemonService;
+import com.reimu747.pokemon.util.AbilityEnumUtil;
 import com.reimu747.pokemon.util.ResultUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -45,7 +48,7 @@ public class PokemonController
 
     /**
      * 返回所有pokemon的列表，仅包含全国id和名称
-
+     *
      * @return 列表
      */
     @GetMapping(value = "get/all")
@@ -53,5 +56,43 @@ public class PokemonController
     {
         List<SimplePokemonVO> list = pokemonService.getAllPokemon();
         return ResultUtil.ok(list);
+    }
+
+    /**
+     * 返回能力值
+     *
+     * @param pokemonRequest 包含名称，个体值，努力值，等级，性格
+     * @return 能力值
+     */
+    @PostMapping(value = "get/stats")
+    public Result<StatsResponse> getStats(@RequestBody PokemonRequest pokemonRequest)
+    {
+        PokemonVO pokemon = pokemonService.getPokemon(pokemonRequest.getName());
+
+        int increaseAbilityIndex = pokemonRequest.getIncreaseAbilityIndex();
+        int decreaseAbilityIndex = pokemonRequest.getDecreaseAbilityIndex();
+        AbilityEnum increaseAbility = AbilityEnumUtil.getAbilityById(increaseAbilityIndex + 2);
+        AbilityEnum decreaseAbility = AbilityEnumUtil.getAbilityById(decreaseAbilityIndex + 2);
+        NatureEnum nature = null;
+        for (NatureEnum natureEnum : NatureEnum.values())
+        {
+            if (natureEnum.getIncraseAbility() == increaseAbility && natureEnum.getDecraseAbility() == decreaseAbility)
+            {
+                nature = natureEnum;
+            }
+        }
+
+        IvsVO ivs = IvsVO.builder().build();
+        BeanUtils.copyProperties(pokemonRequest, ivs);
+        BsVO bs = BsVO.builder().build();
+        BeanUtils.copyProperties(pokemonRequest, bs);
+        int level = pokemonRequest.getLevel();
+
+        StatsVO stats = pokemonService.getStats(pokemon, ivs, bs, level, nature);
+
+        StatsResponse res = StatsResponse.builder().build();
+        BeanUtils.copyProperties(stats, res);
+
+        return ResultUtil.ok(res);
     }
 }

@@ -1,5 +1,6 @@
 package com.reimu747.pokemon.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 

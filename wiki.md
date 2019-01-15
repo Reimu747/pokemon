@@ -104,3 +104,81 @@
 | catch_rate | 捕获度 | Int
 | timestamp | 响应时间戳 | Long |
 | result_code | 响应码 | Int |
+
+## 3、计算pokemon能力值
+### 请求地址: http://domain/pokemon/get/stats POST
+
+### 请求示例    
+```
+{
+    "name": "皮卡丘",
+    "hp_ivs": 0,
+    "attack_ivs": 0,
+    "defense_ivs": 0,
+    "special_attack_ivs": 0,
+    "special_defense_ivs": 0,
+    "speed_ivs": 0,
+    "hp_bs": 0,
+    "attack_bs": 0,
+    "defense_bs": 0,
+    "special_attack_bs": 0,
+    "special_defense_bs": 0,
+    "speed_bs": 0,
+    "level": 100,
+    "increase_ability_index": 0,
+    "decrease_ability_index": 2
+}
+```
+
+### 请求参数
+| 参数名称 | 参数说明 | 参数类型 | 是否必填 |
+|:-------:|:------:|:-------:|:------:|
+| name | pokemon名称 | String | 是 |
+| hp_ivs | hp个体值 | Int | 是 |
+| attack_ivs | 物攻个体值 | Int | 是 |
+| defense_ivs | 物防个体值 | Int | 是 |
+| special_attack_ivs | 特攻个体值 | Int | 是 |
+| special_defense_ivs | 特防个体值 | Int | 是 |
+| speed_ivs | 速度个体值 | Int | 是 |
+| hp_bs | hp努力值 | Int | 是 |
+| attack_bs | 物攻努力值 | Int | 是 |
+| defense_bs | 物防努力值 | Int | 是 |
+| special_attack_bs | 特攻努力值 | Int | 是 |
+| special_defense_bs | 特防努力值 | Int | 是 |
+| speed_bs | 速度努力值 | Int | 是 |
+| level | 等级 | Int | 是 |
+| increase_ability_index | 增强的能力的序号 | Int | 是 |
+| decrease_ability_index | 削弱的能力的序号 | Int | 是 |
+> increase_ability_index 和 decrease_ability_index 范围为0 - 4,分别代表物攻，物防，特攻，特防，速度。  
+> 例如increase_ability_index 为0，decrease_ability_index为2，就代表+物攻-特攻的固执性格。
+
+### 响应示例  
+```
+{
+    "msg": "success",
+    "data": {
+        "hp_stats": 180,
+        "attack_stats": 126,
+        "defense_stats": 85,
+        "special_attack_stats": 94,
+        "special_defense_stats": 105,
+        "speed_stats": 185
+    },
+    "timestamp": 1547514992875,
+    "result_code": 200
+}
+```
+
+### 响应参数
+| 参数名称 | 参数说明 | 参数类型 |
+|:------:|:-------:|:------:|
+| msg | 响应信息 | String |
+| data | 响应数据 | JsonArray |
+| hp_stats | hp能力值 | Int |
+| attack_stats | 物攻能力值 | Int |
+| defense_stats | 物防能力值 | Int | 
+| special_attack_stats | 特攻能力值 | Int |
+| special_defense_stats | 特防能力值 | Int |
+| speed_stats | 速度能力值 | Int |
+| timestamp | 响应时间戳 | Long |
+| result_code | 响应码 | Int |
