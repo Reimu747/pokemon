@@ -87,7 +87,6 @@
 |:------:|:-------:|:------:|
 | msg | 响应信息 | String |
 | data | 响应数据 | JsonArray |
-| id | pokemon全国图鉴id | Int |
 | name | pokemon名称 | String |
 | national_pokedex_id | pokemon全国图鉴id | Int |
 | type_one | 第一属性 | String |
