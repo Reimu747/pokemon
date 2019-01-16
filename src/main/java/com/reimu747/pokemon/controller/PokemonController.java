@@ -10,6 +10,7 @@ import com.reimu747.pokemon.model.vo.*;
 import com.reimu747.pokemon.service.PokemonService;
 import com.reimu747.pokemon.util.AbilityEnumUtil;
 import com.reimu747.pokemon.util.ResultUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -23,7 +24,8 @@ import java.util.List;
  * @Description
  * @Version 1.0
  **/
-@RestController()
+@Slf4j
+@RestController
 public class PokemonController
 {
     @Autowired
@@ -38,11 +40,15 @@ public class PokemonController
     @GetMapping(value = "/get/pokemon")
     public Result<PokemonVO> getByName(@RequestParam("name") String name)
     {
+        log.info("name: {}", name);
+
         PokemonVO pokemon = pokemonService.getPokemon(name);
         if (pokemon != null)
         {
             return ResultUtil.ok(pokemon);
         }
+
+        log.error("数据库中可能没有{}的信息！", name);
         return ResultUtil.failWithMsg(ErrorCodeEnum.INVALID_PARAM);
     }
 

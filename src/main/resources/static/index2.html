@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<body>
+<div id="div1">
+
+</div>
+<button type="button" onclick="loadXMLDoc()">
+    getAll
+</button>
+<a href="/get/all" onclick="javascript:loadXMLDoc()">abc</a>
+<script>
+    function loadXMLDoc() {
+        // var xmlhttp;
+        // if (window.XMLHttpRequest) {
+        //     xmlhttp = new XMLHttpRequest();
+        // }
+        // else {
+        //     xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
+        // }
+        // xmlhttp.open("GET", "http://localhost:8090/pokemon/health/check", true);
+        // xmlhttp.send();
+        //
+        // alert("hahaha");
+        // alert(xmlhttp.responseText);
+        //
+        // $("#div1").append(xmlhttp.responseText);
+
+        alert("1");
+        $.ajax({
+            url: "/pokemon/get/all",
+            type: "GET",
+            contentType: "application/json;charset=utf-8",
+            success: function (response) {
+                console.log(response);
+                alert(response);
+            }
+        });
+    }
+</script>
+</body>
+</html>
