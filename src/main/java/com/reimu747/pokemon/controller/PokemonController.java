@@ -73,6 +73,7 @@ public class PokemonController
     @PostMapping(value = "get/stats")
     public Result<StatsResponse> getStats(@RequestBody PokemonRequest pokemonRequest)
     {
+        log.info("pokemonRequest: {}", pokemonRequest);
         PokemonVO pokemon = pokemonService.getPokemon(pokemonRequest.getName());
 
         int increaseAbilityIndex = pokemonRequest.getIncreaseAbilityIndex();

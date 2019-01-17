@@ -14196,18 +14196,18 @@ module.exports = function bind(fn, thisArg) {
 	},
 	methods: {
 		getInfo() {
-			this.$http.get("/get/pokemon?name=" + this.name).then(({ data }) => this.info = data.data);
+			this.$http.get("/pokemon/get/pokemon?name=" + this.name).then(({ data }) => this.info = data.data);
 		},
 		all31() {
 			this.sendMsg.geti = new Array(6).fill(31);
 		},
 		send() {
 			let sendMsg = this.sendMsg;
-			if (sendMsg.reduce((a, b) => +a + 0 + b) != 6) {
+			if (sendMsg.xingge.reduce((a, b) => +a + 0 + b) != 6) {
 				alert("性格选择不完整");
 				return;
 			}
-			this.$http.post("/get/status", sendMsg).then(({ data }) => {
+			this.$http.post("/pokemon/get/status", sendMsg).then(({ data }) => {
 				this.getMsg = data;
 			});
 		},
@@ -14264,7 +14264,7 @@ module.exports = function bind(fn, thisArg) {
 
 	},
 	beforeCreate() {
-		this.$http.get("/get/all").then(({ data }) => {
+		this.$http.get("/pokemon/get/all").then(({ data }) => {
 			this.list = data.data;
 		});
 	}

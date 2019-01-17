@@ -237,7 +237,7 @@ export default {
 	methods: {
 		getInfo() {
 			this.$http
-					.get("/get/pokemon?name=" + this.name)
+					.get("/pokemon/get/pokemon?name=" + this.name)
 					.then(({ data }) => this.info = data.data)
 		},
 		all31() {
@@ -245,12 +245,12 @@ export default {
 		},
 		send() {
 			let sendMsg = this.sendMsg;
-			if(sendMsg.reduce((a, b) => + a + 0 + b) != 6){
+			if(sendMsg.xingge.reduce((a, b) => + a + 0 + b) != 6){
 				alert("性格选择不完整");
 				return;
 			}
 			this.$http
-				.post("/get/status", sendMsg)
+				.post("/pokemon/get/status", sendMsg)
 				.then(({ data }) => {this.getMsg = data;})
 		},
 		xgcheck(index, value) {
@@ -307,7 +307,7 @@ export default {
 	},
 	beforeCreate() {
 		this.$http
-				.get("/get/all")
+				.get("/pokemon/get/all")
 				.then(({ data }) => {this.list = data.data;})
 	}
 } 

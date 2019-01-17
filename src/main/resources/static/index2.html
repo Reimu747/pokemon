@@ -6,38 +6,253 @@
     <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
 </head>
 <body>
-<div id="div1">
+<table>
+    <tr>
+        <td>
+            <div id="name">
 
-</div>
-<button type="button" onclick="loadXMLDoc()">
-    getAll
-</button>
-<a href="/get/all" onclick="javascript:loadXMLDoc()">abc</a>
+            </div>
+        </td>
+        <td>
+            <form>
+                <select id="pokemons" onchange="setname()"></select>
+            </form>
+        </td>
+    </tr>
+    <tr>
+        <td>能力</td>
+        <td>种族值</td>
+        <td>个体值</td>
+        <td>努力值</td>
+        <td>性格</td>
+        <td>能力值</td>
+    </tr>
+    <form>
+        <tr>
+            <td>HP</td>
+            <td>
+                <div id="hp_ss"></div>
+            </td>
+            <td>
+                <input type="text" id="hp_ivs">
+            </td>
+            <td>
+                <input type="text" id="hp_bs">
+            </td>
+            <td>
+                <input type="button" id="reset_nature" value="重设能力值">
+            </td>
+            <td>
+                <div id="hp_stats"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>物攻</td>
+            <td>
+                <div id="attack_ss"></div>
+            </td>
+            <td>
+                <input type="text" id="attack_ivs">
+            </td>
+            <td>
+                <input type="text" id="attack_bs">
+            </td>
+            <td>
+                <input type="radio" name="increase" value="0">+
+                <input type="radio" name="decrease" value="0">-
+            </td>
+            <td>
+                <div id="attack_stats"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>物防</td>
+            <td>
+                <div id="defense_ss"></div>
+            </td>
+            <td>
+                <input type="text" id="defense_ivs">
+            </td>
+            <td>
+                <input type="text" id="defense_bs">
+            </td>
+            <td>
+                <input type="radio" name="increase" value="1">+
+                <input type="radio" name="decrease" value="1">-
+            </td>
+            <td>
+                <div id="defense_stats"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>特攻</td>
+            <td>
+                <div id="special_attack_ss"></div>
+            </td>
+            <td>
+                <input type="text" id="special_attack_ivs">
+            </td>
+            <td>
+                <input type="text" id="special_attack_bs">
+            </td>
+            <td>
+                <input type="radio" name="increase" value="2">+
+                <input type="radio" name="decrease" value="2">-
+            </td>
+            <td>
+                <div id="special_attack_stats"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>特防</td>
+            <td>
+                <div id="special_defense_ss"></div>
+            </td>
+            <td>
+                <input type="text" id="special_defense_ivs">
+            </td>
+            <td>
+                <input type="text" id="special_defense_bs">
+            </td>
+            <td>
+                <input type="radio" name="increase" value="3">+
+                <input type="radio" name="decrease" value="3">-
+            </td>
+            <td>
+                <div id="special_defense_stats"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>速度</td>
+            <td>
+                <div id="speed_ss"></div>
+            </td>
+            <td>
+                <input type="text" id="speed_ivs">
+            </td>
+            <td>
+                <input type="text" id="speed_bs">
+            </td>
+            <td>
+                <input type="radio" name="increase" value="4">+
+                <input type="radio" name="decrease" value="4">-
+            </td>
+            <td>
+                <div id="speed_stats"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>等级</td>
+            <td>
+                <input type="text" id="level">
+            </td>
+            <td>
+                <input type="button" id="all_31" value="全31">
+            </td>
+            <td>
+                <div id="remain_bs"></div>
+            </td>
+            <td>
+                <input type="button" value="计算能力值" onclick="getStats()">
+            </td>
+            <td>
+                <div>-</div>
+            </td>
+        </tr>
+    </form>
+</table>
 <script>
-    function loadXMLDoc() {
-        // var xmlhttp;
-        // if (window.XMLHttpRequest) {
-        //     xmlhttp = new XMLHttpRequest();
-        // }
-        // else {
-        //     xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-        // }
-        // xmlhttp.open("GET", "http://localhost:8090/pokemon/health/check", true);
-        // xmlhttp.send();
-        //
-        // alert("hahaha");
-        // alert(xmlhttp.responseText);
-        //
-        // $("#div1").append(xmlhttp.responseText);
+    getAll();
 
-        alert("1");
+    function getAll() {
         $.ajax({
             url: "/pokemon/get/all",
             type: "GET",
             contentType: "application/json;charset=utf-8",
-            success: function (response) {
-                console.log(response);
-                alert(response);
+            success: function (data) {
+                var list = data.data;
+                for (var i = 0; i < list.length; i++) {
+                    var pokemon = list[i].id + " " + list[i].name;
+                    $("#pokemons").append("<option id='option' value='list[i].name'>" + pokemon +
+                        "</option>");
+                }
+            }
+        });
+    }
+
+    function setname() {
+        var strArray = $("#pokemons  option:selected").text().split(" ");
+        var name = strArray[1];
+        $("#name").text(name);
+        $.ajax({
+            url: "/pokemon/get/pokemon",
+            type: "GET",
+            data: {"name": name},
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                var pokemon = data.data;
+                $("#hp_ss").text(pokemon.hp_ss);
+                $("#attack_ss").text(pokemon.attack_ss);
+                $("#defense_ss").text(pokemon.defense_ss);
+                $("#special_attack_ss").text(pokemon.special_attack_ss);
+                $("#special_defense_ss").text(pokemon.special_defense_ss);
+                $("#speed_ss").text(pokemon.speed_ss);
+            }
+        });
+    }
+
+    function getStats()
+    {
+        var name = $("#name").text();
+
+        var hp_ivs = $("#hp_ivs").val();
+        var attack_ivs = $("#attack_ivs").val();
+        var defense_ivs = $("#defense_ivs").val();
+        var special_attack_ivs = $("#special_attack_ivs").val();
+        var special_defense_ivs = $("#special_defense_ivs").val();
+        var speed_ivs = $("#speed_ivs").val();
+
+        var hp_bs = $("#hp_bs").val();
+        var attack_bs = $("#attack_bs").val();
+        var defense_bs = $("#defense_bs").val();
+        var special_attack_bs = $("#special_attack_bs").val();
+        var special_defense_bs = $("#special_defense_bs").val();
+        var speed_bs = $("#speed_bs").val();
+
+        var level = $("#level").val();
+        var increase_ability_index = $('input[name="increase"]:checked').val();
+        var decrease_ability_index = $('input[name="decrease"]:checked').val();
+
+        $.ajax({
+            url: "/pokemon/get/stats",
+            type: "POST",
+            data: JSON.stringify({
+                "name": name,
+                "hp_ivs": hp_ivs,
+                "attack_ivs": attack_ivs,
+                "defense_ivs": defense_ivs,
+                "special_attack_ivs": special_attack_ivs,
+                "special_defense_ivs": special_defense_ivs,
+                "speed_ivs": speed_ivs,
+                "hp_bs": hp_bs,
+                "attack_bs": attack_bs,
+                "defense_bs": defense_bs,
+                "special_attack_bs": special_attack_bs,
+                "special_defense_bs": special_defense_bs,
+                "speed_bs": speed_bs,
+                "level": level,
+                "increase_ability_index": increase_ability_index,
+                "decrease_ability_index": decrease_ability_index
+            }),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                var statsArray = data.data;
+                $("#hp_stats").text(statsArray.hp_stats);
+                $("#attack_stats").text(statsArray.attack_stats);
+                $("#defense_stats").text(statsArray.defense_stats);
+                $("#special_attack_stats").text(statsArray.special_attack_stats);
+                $("#special_defense_stats").text(statsArray.special_defense_stats);
+                $("#speed_stats").text(statsArray.speed_stats);
             }
         });
     }
