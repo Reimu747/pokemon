@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * @author Reimu747
  */
@@ -13,6 +15,18 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface WazaDao
 {
+    /**
+     * 获取所有招式的列表
+     *
+     * @return 所有招式的列表
+     */
+    @Select(value = "SELECT waza.name, type.name AS typeName, waza.power, waza.hit_rate AS hitRate, waza_type.name " +
+            "AS wazaTypeName\n" +
+            "FROM waza\n" +
+            "INNER JOIN type ON waza.type_id = type.id\n" +
+            "INNER JOIN waza_type ON waza.waza_type_id = waza_type.id")
+    List<WazaVO> getAllWaza();
+
     /**
      * 通过招式名称查找对应招式
      *
