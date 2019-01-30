@@ -54,6 +54,12 @@ public class BattleServiceImplTest
             .hpBs(252).attackBs(255).defenseBs(255)
             .specialAttackBs(255).specialDefenseBs(255).speedBs(255)
             .build();
+    // 全零努力值
+    private BsVO allZeroBsVo = BsVO
+            .builder()
+            .hpBs(0).attackBs(0).defenseBs(0)
+            .specialAttackBs(0).specialDefenseBs(0).speedBs(0)
+            .build();
     // 满物攻满速度4HP努力值
     private BsVO fullAttackBsVo = BsVO
             .builder()
@@ -233,6 +239,29 @@ public class BattleServiceImplTest
         Assert.assertEquals(2, damageRange.length);
         Assert.assertArrayEquals(new double[]{1D, 1D}, damageRange, 0D);
 
+
+        pokemonVO = pokemonDao.getPokemonVOByName("叉字蝠");
+        WazaVO crossPoison = wazaDao.getWazaByName("十字毒刃");
+        PokemonInstanceVO crobat = PokemonInstanceVO.builder()
+                .ivsVO(zeroAttackIvsVo)
+                .bsVO(allZeroBsVo)
+                .level(50)
+                .nature(NatureEnum.ADAMANT)
+                .wazaOne(crossPoison)
+                .build();
+
+        crobat.setStatsVO(pokemonService.getStats(pokemonVO, zeroAttackIvsVo, allZeroBsVo, 50,
+                NatureEnum.ADAMANT));
+        BeanUtils.copyProperties(pokemonVO, crobat);
+
+        pokemonVO = pokemonDao.getPokemonVOByName("卡璞·鸣鸣");
+        PokemonInstanceVO mingMing = PokemonInstanceVO.builder()
+                .ivsVO(zeroAttackIvsVo)
+                .bsVO(allZeroBsVo)
+                .level(50)
+                .nature(NatureEnum.ADAMANT)
+                .wazaOne(crossPoison)
+                .build();
     }
 
     @Test

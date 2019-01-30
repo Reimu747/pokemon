@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>能力值计算器</title>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<body>
+<table border="1">
+    <tr>
+        <td align="center" colspan="6">
+            <div id="name"></div>
+            <input id="input" list="pokemons" onchange="setname()">
+            <datalist id="pokemons"></datalist>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">能力</td>
+        <td align="center">种族值</td>
+        <td align="center">个体值</td>
+        <td align="center">努力值</td>
+        <td align="center">性格</td>
+        <td align="center">能力值</td>
+    </tr>
+    <form>
+        <tr>
+            <td align="center">HP</td>
+            <td align="center">
+                <div id="hp_ss"></div>
+            </td>
+            <td>
+                <input type="text" id="hp_ivs" value="31">
+            </td>
+            <td>
+                <input type="text" id="hp_bs">
+            </td>
+            <td>
+            </td>
+            <td align="center">
+                <div id="hp_stats"></div>
+            </td>
+        </tr>
+        <tr>
+            <td align="center">物攻</td>
+            <td align="center">
+                <div id="attack_ss"></div>
+            </td>
+            <td>
+                <input type="text" id="attack_ivs" value="31">
+            </td>
+            <td>
+                <input type="text" id="attack_bs">
+            </td>
+            <td>
+                <input type="radio" name="increase" value="0">+
+                <input type="radio" name="decrease" value="0">-
+            </td>
+            <td align="center">
+                <div id="attack_stats"></div>
+            </td>
+        </tr>
+        <tr>
+            <td align="center">物防</td>
+            <td align="center">
+                <div id="defense_ss"></div>
+            </td>
+            <td>
+                <input type="text" id="defense_ivs" value="31">
+            </td>
+            <td>
+                <input type="text" id="defense_bs">
+            </td>
+            <td>
+                <input type="radio" name="increase" value="1">+
+                <input type="radio" name="decrease" value="1">-
+            </td>
+            <td align="center">
+                <div id="defense_stats"></div>
+            </td>
+        </tr>
+        <tr>
+            <td align="center">特攻</td>
+            <td align="center">
+                <div id="special_attack_ss"></div>
+            </td>
+            <td>
+                <input type="text" id="special_attack_ivs" value="31">
+            </td>
+            <td>
+                <input type="text" id="special_attack_bs">
+            </td>
+            <td>
+                <input type="radio" name="increase" value="2">+
+                <input type="radio" name="decrease" value="2">-
+            </td>
+            <td align="center">
+                <div id="special_attack_stats"></div>
+            </td>
+        </tr>
+        <tr>
+            <td align="center">特防</td>
+            <td align="center">
+                <div id="special_defense_ss"></div>
+            </td>
+            <td>
+                <input type="text" id="special_defense_ivs" value="31">
+            </td>
+            <td>
+                <input type="text" id="special_defense_bs">
+            </td>
+            <td>
+                <input type="radio" name="increase" value="3">+
+                <input type="radio" name="decrease" value="3">-
+            </td>
+            <td align="center">
+                <div id="special_defense_stats"></div>
+            </td>
+        </tr>
+        <tr>
+            <td align="center">速度</td>
+            <td align="center">
+                <div id="speed_ss"></div>
+            </td>
+            <td>
+                <input type="text" id="speed_ivs" value="31">
+            </td>
+            <td>
+                <input type="text" id="speed_bs">
+            </td>
+            <td>
+                <input type="radio" name="increase" value="4">+
+                <input type="radio" name="decrease" value="4">-
+            </td>
+            <td align="center">
+                <div id="speed_stats"></div>
+            </td>
+        </tr>
+        <tr>
+            <td align="center">等级</td>
+            <td>
+                <input type="text" id="level">
+            </td>
+            <td align="center">
+                <input type="button" id="all_31" value="全0" onclick="setIvs()">
+            </td>
+            <td>
+                <div id="remain_bs"></div>
+            </td>
+            <td align="center">
+                <input type="button" value="计算能力值" onclick="getStats()">
+            </td>
+            <td align="center">
+                <div>-</div>
+            </td>
+        </tr>
+    </form>
+</table>
+<div id="errorMsg"></div>
+<script>
+    getAll();
+
+    function getAll() {
+        $.ajax({
+            url: "/pokemon/get/all",
+            type: "GET",
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                var list = data.data;
+                for (var i = 0; i < list.length; i++) {
+                    var pokemon = list[i].id + " " + list[i].name;
+                    $("#pokemons").append("<option value='" + pokemon + "'></option>");
+                }
+            }
+        });
+    }
+
+    function setname() {
+        var strArray = $("#input").val().split(" ");
+        var name = strArray[1];
+        $("#name").text(name);
+        $.ajax({
+            url: "/pokemon/get/pokemon",
+            type: "GET",
+            data: {"name": name},
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                var pokemon = data.data;
+                $("#hp_ss").text(pokemon.hp_ss);
+                $("#attack_ss").text(pokemon.attack_ss);
+                $("#defense_ss").text(pokemon.defense_ss);
+                $("#special_attack_ss").text(pokemon.special_attack_ss);
+                $("#special_defense_ss").text(pokemon.special_defense_ss);
+                $("#speed_ss").text(pokemon.speed_ss);
+            }
+        });
+    }
+
+    function getStats() {
+        var name = $("#name").text();
+
+        var hp_ivs = $("#hp_ivs").val();
+        var attack_ivs = $("#attack_ivs").val();
+        var defense_ivs = $("#defense_ivs").val();
+        var special_attack_ivs = $("#special_attack_ivs").val();
+        var special_defense_ivs = $("#special_defense_ivs").val();
+        var speed_ivs = $("#speed_ivs").val();
+
+        var hp_bs = $("#hp_bs").val();
+        var attack_bs = $("#attack_bs").val();
+        var defense_bs = $("#defense_bs").val();
+        var special_attack_bs = $("#special_attack_bs").val();
+        var special_defense_bs = $("#special_defense_bs").val();
+        var speed_bs = $("#speed_bs").val();
+
+        var level = $("#level").val();
+        var increase_ability_index = $('input[name="increase"]:checked').val();
+        var decrease_ability_index = $('input[name="decrease"]:checked').val();
+
+        $.ajax({
+            url: "/pokemon/get/stats",
+            type: "POST",
+            data: JSON.stringify({
+                "name": name,
+                "hp_ivs": hp_ivs,
+                "attack_ivs": attack_ivs,
+                "defense_ivs": defense_ivs,
+                "special_attack_ivs": special_attack_ivs,
+                "special_defense_ivs": special_defense_ivs,
+                "speed_ivs": speed_ivs,
+                "hp_bs": hp_bs,
+                "attack_bs": attack_bs,
+                "defense_bs": defense_bs,
+                "special_attack_bs": special_attack_bs,
+                "special_defense_bs": special_defense_bs,
+                "speed_bs": speed_bs,
+                "level": level,
+                "increase_ability_index": increase_ability_index,
+                "decrease_ability_index": decrease_ability_index
+            }),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                var statsArray = data.data;
+                if (statsArray == null) {
+                    var errorMsg = data.msg;
+                    $("#errorMsg").append("<p style='color:red'>" + errorMsg + "</p>");
+                    $("#errorMsg").append("<p style='color:red'>请确认输入参数是否正确：</p>");
+                    $("#errorMsg").append("<p style='color:red'>请选择要计算的pokemon：</p>");
+                    $("#errorMsg").append("<p style='color:red'>个体值范围0-31；</p>");
+                    $("#errorMsg").append("<p style='color:red'>努力值范围0-255；</p>");
+                    $("#errorMsg").append("<p style='color:red'>等级范围1-100；</p>");
+                    $("#errorMsg").append("<p style='color:red'>请选择性格修正</p>");
+                }
+                else {
+                    $("#hp_stats").text(statsArray.hp_stats);
+                    $("#attack_stats").text(statsArray.attack_stats);
+                    $("#defense_stats").text(statsArray.defense_stats);
+                    $("#special_attack_stats").text(statsArray.special_attack_stats);
+                    $("#special_defense_stats").text(statsArray.special_defense_stats);
+                    $("#speed_stats").text(statsArray.speed_stats);
+                    $("#errorMsg").empty();
+                }
+            }
+        });
+    }
+
+    function setIvs() {
+        if ($("#all_31").val() === "全31") {
+            $("#all_31").attr("value", "全0");
+            $("#hp_ivs").val(31);
+            $("#attack_ivs").val(31);
+            $("#defense_ivs").val(31);
+            $("#special_attack_ivs").val(31);
+            $("#special_defense_ivs").val(31);
+            $("#speed_ivs").val(31);
+        }
+        else if ($("#all_31").val() === "全0") {
+            $("#all_31").attr("value", "全31");
+            $("#hp_ivs").val(0);
+            $("#attack_ivs").val(0);
+            $("#defense_ivs").val(0);
+            $("#special_attack_ivs").val(0);
+            $("#special_defense_ivs").val(0);
+            $("#speed_ivs").val(0);
+        }
+    }
+</script>
+</body>
+</html>

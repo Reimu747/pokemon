@@ -10,8 +10,11 @@ import com.reimu747.pokemon.model.vo.*;
 import com.reimu747.pokemon.service.PokemonService;
 import com.reimu747.pokemon.util.AbilityEnumUtil;
 import com.reimu747.pokemon.util.ResultUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,9 +26,9 @@ import java.util.List;
  * @Description
  * @Version 1.0
  **/
-@RestController()
-public class PokemonController
-{
+@Slf4j
+@RestController
+public class PokemonController {
     @Autowired
     PokemonService pokemonService;
 
@@ -36,13 +39,15 @@ public class PokemonController
      * @return 对应的pokemon
      */
     @GetMapping(value = "/get/pokemon")
-    public Result<PokemonVO> getByName(@RequestParam("name") String name)
-    {
+    public Result<PokemonVO> getByName(@RequestParam("name") String name) {
+        log.info("name: {}", name);
+
         PokemonVO pokemon = pokemonService.getPokemon(name);
-        if (pokemon != null)
-        {
+        if (pokemon != null) {
             return ResultUtil.ok(pokemon);
         }
+
+        log.error("数据库中没有{} 的信息！", name);
         return ResultUtil.failWithMsg(ErrorCodeEnum.INVALID_PARAM);
     }
 
@@ -52,8 +57,7 @@ public class PokemonController
      * @return 列表
      */
     @GetMapping(value = "get/all")
-    public Result<List<SimplePokemonVO>> getAll()
-    {
+    public Result<List<SimplePokemonVO>> getAll() {
         List<SimplePokemonVO> list = pokemonService.getAllPokemon();
         return ResultUtil.ok(list);
     }
@@ -65,8 +69,15 @@ public class PokemonController
      * @return 能力值
      */
     @PostMapping(value = "get/stats")
-    public Result<StatsResponse> getStats(@RequestBody PokemonRequest pokemonRequest)
-    {
+    public Result<StatsResponse> getStats(@Validated @RequestBody PokemonRequest pokemonRequest,
+                                          BindingResult bindingResult) {
+        if (bindingResult.hasErrors())
+        {
+            log.error("pokemonRequest: {}", pokemonRequest);
+            return ResultUtil.failWithMsg(ErrorCodeEnum.INVALID_PARAM);
+        }
+
+        log.info("pokemonRequest: {}", pokemonRequest);
         PokemonVO pokemon = pokemonService.getPokemon(pokemonRequest.getName());
 
         int increaseAbilityIndex = pokemonRequest.getIncreaseAbilityIndex();
@@ -74,10 +85,8 @@ public class PokemonController
         AbilityEnum increaseAbility = AbilityEnumUtil.getAbilityById(increaseAbilityIndex + 2);
         AbilityEnum decreaseAbility = AbilityEnumUtil.getAbilityById(decreaseAbilityIndex + 2);
         NatureEnum nature = null;
-        for (NatureEnum natureEnum : NatureEnum.values())
-        {
-            if (natureEnum.getIncraseAbility() == increaseAbility && natureEnum.getDecraseAbility() == decreaseAbility)
-            {
+        for (NatureEnum natureEnum : NatureEnum.values()) {
+            if (natureEnum.getIncraseAbility() == increaseAbility && natureEnum.getDecraseAbility() == decreaseAbility) {
                 nature = natureEnum;
             }
         }

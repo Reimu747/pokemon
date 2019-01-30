@@ -266,7 +266,7 @@ public class BattleServiceImpl implements BattleService
     {
         // 属性一致加成
         boolean isSameType =
-                attackPokemon.getTypeOne().equals(waza.getTypeName()) || attackPokemon.getTypeTwo().equals(waza.getTypeName());
+                attackPokemon.getTypeOne().equals(waza.getTypeName()) || (attackPokemon.getTypeTwo() != null && attackPokemon.getTypeTwo().equals(waza.getTypeName()));
         return (isSameType ? SAME_TYPE_CORRECTION : NOT_SAME_TYPE_CORRECTION);
     }
 
@@ -388,6 +388,10 @@ public class BattleServiceImpl implements BattleService
      */
     private double getOtherCorrection(PokemonInstanceVO attackPokemon)
     {
+        if (attackPokemon.getTokuseiVO() == null)
+        {
+            return 1.0D;
+        }
         // 如果特性是亲子爱
         if (PARENTAL_BOND.equals(attackPokemon.getTokuseiVO().getName()))
         {

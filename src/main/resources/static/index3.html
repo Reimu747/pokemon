@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>对战计算器</title>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
+<body>
+<table border="1">
+    <tr>
+        <td align="center" colspan="5">
+            <div id="name1"></div>
+            <input id="input1" list="pokemons1" onchange="setName1()">
+            <datalist id="pokemons1"></datalist>
+        </td>
+
+        <td align="center"></td>
+
+        <td align="center" colspan="5">
+            <div id="name2"></div>
+            <input id="input2" list="pokemons2" onchange="setName2()">
+            <datalist id="pokemons2"></datalist>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">种族值</td>
+        <td align="center">个体值</td>
+        <td align="center">努力值</td>
+        <td align="center">性格</td>
+        <td align="center">能力值</td>
+
+        <td></td>
+
+        <td align="center">能力值</td>
+        <td align="center">性格</td>
+        <td align="center">努力值</td>
+        <td align="center">个体值</td>
+        <td align="center">种族值</td>
+    </tr>
+    <tr>
+        <td align="center">
+            <div id="hp_ss1"></div>
+        </td>
+        <td>
+            <input type="text" id="hp_ivs1" value="31">
+        </td>
+        <td>
+            <input type="text" id="hp_bs1" value="0">
+        </td>
+        <td></td>
+        <td align="center">
+            <div id="hp_stats1"></div>
+        </td>
+
+        <td align="center">HP</td>
+
+        <td align="center">
+            <div id="hp_stats2"></div>
+        </td>
+        <td></td>
+        <td>
+            <input type="text" id="hp_bs2" value="0">
+        </td>
+        <td>
+            <input type="text" id="hp_ivs2" value="31">
+        </td>
+        <td align="center">
+            <div id="hp_ss2"></div>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <div id="attack_ss1"></div>
+        </td>
+        <td>
+            <input type="text" id="attack_ivs1" value="31">
+        </td>
+        <td>
+            <input type="text" id="attack_bs1" value="0">
+        </td>
+        <td>
+            <input type="radio" name="increase1" value="0" checked>+
+            <input type="radio" name="decrease1" value="0" checked>-
+        </td>
+        <td align="center">
+            <div id="attack_stats1"></div>
+        </td>
+
+        <td align="center">物攻</td>
+
+        <td align="center">
+            <div id="attack_stats2"></div>
+        </td>
+        <td>
+            <input type="radio" name="increase2" value="0" checked>+
+            <input type="radio" name="decrease2" value="0" checked>-
+        </td>
+        <td>
+            <input type="text" id="attack_bs2" value="0">
+        </td>
+        <td>
+            <input type="text" id="attack_ivs2" value="31">
+        </td>
+        <td align="center">
+            <div id="attack_ss2"></div>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <div id="defense_ss1"></div>
+        </td>
+        <td>
+            <input type="text" id="defense_ivs1" value="31">
+        </td>
+        <td>
+            <input type="text" id="defense_bs1" value="0">
+        </td>
+        <td>
+            <input type="radio" name="increase1" value="1">+
+            <input type="radio" name="decrease1" value="1">-
+        </td>
+        <td align="center">
+            <div id="defense_stats1"></div>
+        </td>
+
+        <td align="center">物防</td>
+
+        <td align="center">
+            <div id="defense_stats2"></div>
+        </td>
+        <td>
+            <input type="radio" name="increase2" value="1">+
+            <input type="radio" name="decrease2" value="1">-
+        </td>
+        <td>
+            <input type="text" id="defense_bs2" value="0">
+        </td>
+        <td>
+            <input type="text" id="defense_ivs2" value="31">
+        </td>
+        <td align="center">
+            <div id="defense_ss2"></div>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <div id="special_attack_ss1"></div>
+        </td>
+        <td>
+            <input type="text" id="special_attack_ivs1" value="31">
+        </td>
+        <td>
+            <input type="text" id="special_attack_bs1" value="0">
+        </td>
+        <td>
+            <input type="radio" name="increase1" value="2">+
+            <input type="radio" name="decrease1" value="2">-
+        </td>
+        <td align="center">
+            <div id="special_attack_stats1"></div>
+        </td>
+
+        <td align="center">特攻</td>
+
+        <td align="center">
+            <div id="special_attack_stats2"></div>
+        </td>
+        <td>
+            <input type="radio" name="increase2" value="2">+
+            <input type="radio" name="decrease2" value="2">-
+        </td>
+        <td>
+            <input type="text" id="special_attack_bs2" value="0">
+        </td>
+        <td>
+            <input type="text" id="special_attack_ivs2" value="31">
+        </td>
+        <td align="center">
+            <div id="special_attack_ss2"></div>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <div id="special_defense_ss1"></div>
+        </td>
+        <td>
+            <input type="text" id="special_defense_ivs1" value="31">
+        </td>
+        <td>
+            <input type="text" id="special_defense_bs1" value="0">
+        </td>
+        <td>
+            <input type="radio" name="increase1" value="3">+
+            <input type="radio" name="decrease1" value="3">-
+        </td>
+        <td align="center">
+            <div id="special_defense_stats1"></div>
+        </td>
+
+        <td align="center">特防</td>
+
+        <td align="center">
+            <div id="special_defense_stats2"></div>
+        </td>
+        <td>
+            <input type="radio" name="increase2" value="3">+
+            <input type="radio" name="decrease2" value="3">-
+        </td>
+        <td>
+            <input type="text" id="special_defense_bs2" value="0">
+        </td>
+        <td>
+            <input type="text" id="special_defense_ivs2" value="31">
+        </td>
+        <td align="center">
+            <div id="special_defense_ss2"></div>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">
+            <div id="speed_ss1"></div>
+        </td>
+        <td>
+            <input type="text" id="speed_ivs1" value="31">
+        </td>
+        <td>
+            <input type="text" id="speed_bs1" value="0">
+        </td>
+        <td>
+            <input type="radio" name="increase1" value="4">+
+            <input type="radio" name="decrease1" value="4">-
+        </td>
+        <td align="center">
+            <div id="speed_stats1"></div>
+        </td>
+
+        <td align="center">速度</td>
+
+        <td align="center">
+            <div id="speed_stats2"></div>
+        </td>
+        <td>
+            <input type="radio" name="increase2" value="4">+
+            <input type="radio" name="decrease2" value="4">-
+        </td>
+        <td>
+            <input type="text" id="speed_bs2" value="0">
+        </td>
+        <td>
+            <input type="text" id="speed_ivs2" value="31">
+        </td>
+        <td align="center">
+            <div id="speed_ss2"></div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div>-</div>
+        </td>
+        <td align="center">
+            <input type="button" id="all_311" value="全0" onclick="setIvs1()">
+        </td>
+        <td>
+            <div id="remain_bs1"></div>
+        </td>
+        <td align="center">
+            <input type="button" id="cal_stats1" value="计算能力值" onclick="getStats1()">
+        </td>
+        <td align="center">
+            <input type="text" id="level1"  value="50">
+        </td>
+
+        <td align="center">等级</td>
+
+        <td align="center">
+            <input type="text" id="level2" value="50">
+        </td>
+        <td align="center">
+            <input type="button" id="cal_stats2" value="计算能力值" onclick="getStats2()">
+        </td>
+        <td>
+            <div id="remain_bs2"></div>
+        </td>
+        <td align="center">
+            <input type="button" id="all_312" value="全0" onclick="setIvs2()">
+        </td>
+        <td>
+            <div>-</div>
+        </td>
+    </tr>
+    <tr>
+        <td align="center" colspan="5">
+            <input id="tokusei1" list="tokusei_list1">
+            <datalist id="tokusei_list1"></datalist>
+        </td>
+
+        <td align="center">特性</td>
+
+        <td align="center" colspan="5">
+            <input id="tokusei2" list="tokusei_list2">
+            <datalist id="tokusei_list2"></datalist>
+        </td>
+    </tr>
+    <tr>
+        <td align="center" colspan="5">
+            <input id="item1" list="item_list1">
+            <datalist id="item_list1"></datalist>
+        </td>
+
+        <td align="center">道具</td>
+
+        <td align="center" colspan="5">
+            <input id="item2" list="item_list2">
+            <datalist id="item_list2"></datalist>
+        </td>
+    </tr>
+    <tr>
+        <td align="center" colspan="5">
+            <input id="waza1" list="waza_list1">
+            <datalist id="waza_list1"></datalist>
+        </td>
+
+        <td align="center">招式</td>
+
+        <td align="center" colspan="5">
+            <input id="waza2" list="waza_list2">
+            <datalist id="waza_list2"></datalist>
+        </td>
+    </tr>
+    <tr>
+        <td align="center">能力等级</td>
+        <td align="center">
+            物攻：
+            <select id="attack_ability_level1">
+                <option>-6</option>
+                <option>-5</option>
+                <option>-4</option>
+                <option>-3</option>
+                <option>-2</option>
+                <option>-1</option>
+                <option selected="selected">0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+            </select>
+        </td>
+        <td align="center">
+            特攻：
+            <select id="special_attack_ability_level1">
+                <option>-6</option>
+                <option>-5</option>
+                <option>-4</option>
+                <option>-3</option>
+                <option>-2</option>
+                <option>-1</option>
+                <option selected="selected">0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+            </select>
+        </td>
+        <td align="center">
+            是否CT<input id="is_ct1" type="checkbox">
+        </td>
+        <td align="center">
+            异常状态：
+            <select id="status_conditions1">
+                <option>正常</option>
+                <option>灼伤</option>
+            </select>
+        </td>
+
+        <td align="center">状态</td>
+
+        <td align="center">
+            异常状态：
+            <select id="status_conditions2">
+                <option>正常</option>
+                <option>灼伤</option>
+            </select>
+        </td>
+        <td align="center">
+            是否CT<input id="is_ct2" type="checkbox">
+        </td>
+        <td align="center">能力等级</td>
+        <td align="center">
+            物防：
+            <select id="defense_ability_level2">
+                <option>-6</option>
+                <option>-5</option>
+                <option>-4</option>
+                <option>-3</option>
+                <option>-2</option>
+                <option>-1</option>
+                <option selected="selected">0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+            </select>
+        </td>
+        <td align="center">
+            特防：
+            <select id="special_defense_ability_level2">
+                <option>-6</option>
+                <option>-5</option>
+                <option>-4</option>
+                <option>-3</option>
+                <option>-2</option>
+                <option>-1</option>
+                <option selected="selected">0</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+            </select>
+        </td>
+    </tr>
+
+    <tr>
+        <td align="center" colspan="6"></td>
+        <td align="center" colspan="5">
+            A攻击B<input type="button" id="get_damage" value="计算伤害值" onclick="getDamage()">
+        </td>
+    </tr>
+    <tr>
+        <td align="center" colspan="6"></td>
+        <td align="center">伤害百分比</td>
+        <td align="center">最小伤害</td>
+        <td align="center" id="min_damage"></td>
+        <td align="center">最大伤害</td>
+        <td align="center" id="max_damage"></td>
+    </tr>
+    <tr>
+        <td align="center" colspan="6"></td>
+        <td align="center" colspan="2">可能的伤害值</td>
+        <td align="center" colspan="3" id="possible_damages"></td>
+    </tr>
+</table>
+<div id="errorMsg"></div>
+<script>
+    getAll();
+    getAllTokusei();
+    getAllItem();
+    getAllWaza();
+
+    function getAll() {
+        $.ajax({
+            url: "/pokemon/get/all",
+            type: "GET",
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                var list = data.data;
+                for (var i = 0; i < list.length; i++) {
+                    var pokemon = list[i].id + " " + list[i].name;
+                    $("#pokemons1").append("<option value='" + pokemon + "'></option>");
+                    $("#pokemons2").append("<option value='" + pokemon + "'></option>");
+                }
+            }
+        });
+    }
+
+    function setName1() {
+        var strArray = $("#input1").val().split(" ");
+        var name = strArray[1];
+        $("#name1").text(name);
+        $.ajax({
+            url: "/pokemon/get/pokemon",
+            type: "GET",
+            data: {"name": name},
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                var pokemon = data.data;
+                $("#hp_ss1").text(pokemon.hp_ss);
+                $("#attack_ss1").text(pokemon.attack_ss);
+                $("#defense_ss1").text(pokemon.defense_ss);
+                $("#special_attack_ss1").text(pokemon.special_attack_ss);
+                $("#special_defense_ss1").text(pokemon.special_defense_ss);
+                $("#speed_ss1").text(pokemon.speed_ss);
+            }
+        });
+    }
+
+    function setName2() {
+        var strArray = $("#input2").val().split(" ");
+        var name = strArray[1];
+        $("#name2").text(name);
+        $.ajax({
+            url: "/pokemon/get/pokemon",
+            type: "GET",
+            data: {"name": name},
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                var pokemon = data.data;
+                $("#hp_ss2").text(pokemon.hp_ss);
+                $("#attack_ss2").text(pokemon.attack_ss);
+                $("#defense_ss2").text(pokemon.defense_ss);
+                $("#special_attack_ss2").text(pokemon.special_attack_ss);
+                $("#special_defense_ss2").text(pokemon.special_defense_ss);
+                $("#speed_ss2").text(pokemon.speed_ss);
+            }
+        });
+    }
+
+    function getStats1() {
+        var name = $("#name1").text();
+
+        var hp_ivs = $("#hp_ivs1").val();
+        var attack_ivs = $("#attack_ivs1").val();
+        var defense_ivs = $("#defense_ivs1").val();
+        var special_attack_ivs = $("#special_attack_ivs1").val();
+        var special_defense_ivs = $("#special_defense_ivs1").val();
+        var speed_ivs = $("#speed_ivs1").val();
+
+        var hp_bs = $("#hp_bs1").val();
+        var attack_bs = $("#attack_bs1").val();
+        var defense_bs = $("#defense_bs1").val();
+        var special_attack_bs = $("#special_attack_bs1").val();
+        var special_defense_bs = $("#special_defense_bs1").val();
+        var speed_bs = $("#speed_bs1").val();
+
+        var level = $("#level1").val();
+        var increase_ability_index = $('input[name="increase1"]:checked').val();
+        var decrease_ability_index = $('input[name="decrease1"]:checked').val();
+
+        $.ajax({
+            url: "/pokemon/get/stats",
+            type: "POST",
+            data: JSON.stringify({
+                "name": name,
+                "hp_ivs": hp_ivs,
+                "attack_ivs": attack_ivs,
+                "defense_ivs": defense_ivs,
+                "special_attack_ivs": special_attack_ivs,
+                "special_defense_ivs": special_defense_ivs,
+                "speed_ivs": speed_ivs,
+                "hp_bs": hp_bs,
+                "attack_bs": attack_bs,
+                "defense_bs": defense_bs,
+                "special_attack_bs": special_attack_bs,
+                "special_defense_bs": special_defense_bs,
+                "speed_bs": speed_bs,
+                "level": level,
+                "increase_ability_index": increase_ability_index,
+                "decrease_ability_index": decrease_ability_index
+            }),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                var statsArray = data.data;
+                if (statsArray == null) {
+                    $("#errorMsg").empty();
+                    var errorMsg = data.msg;
+                    $("#errorMsg").append("<p style='color:red'>" + errorMsg + "</p>");
+                    $("#errorMsg").append("<p style='color:red'>请确认输入参数是否正确！</p>");
+                }
+                else {
+                    $("#hp_stats1").text(statsArray.hp_stats);
+                    $("#attack_stats1").text(statsArray.attack_stats);
+                    $("#defense_stats1").text(statsArray.defense_stats);
+                    $("#special_attack_stats1").text(statsArray.special_attack_stats);
+                    $("#special_defense_stats1").text(statsArray.special_defense_stats);
+                    $("#speed_stats1").text(statsArray.speed_stats);
+                    $("#errorMsg").empty();
+                }
+            }
+        });
+    }
+
+    function getStats2() {
+        var name = $("#name2").text();
+
+        var hp_ivs = $("#hp_ivs2").val();
+        var attack_ivs = $("#attack_ivs2").val();
+        var defense_ivs = $("#defense_ivs2").val();
+        var special_attack_ivs = $("#special_attack_ivs2").val();
+        var special_defense_ivs = $("#special_defense_ivs2").val();
+        var speed_ivs = $("#speed_ivs2").val();
+
+        var hp_bs = $("#hp_bs2").val();
+        var attack_bs = $("#attack_bs2").val();
+        var defense_bs = $("#defense_bs2").val();
+        var special_attack_bs = $("#special_attack_bs2").val();
+        var special_defense_bs = $("#special_defense_bs2").val();
+        var speed_bs = $("#speed_bs2").val();
+
+        var level = $("#level2").val();
+        var increase_ability_index = $('input[name="increase2"]:checked').val();
+        var decrease_ability_index = $('input[name="decrease2"]:checked').val();
+
+        $.ajax({
+            url: "/pokemon/get/stats",
+            type: "POST",
+            data: JSON.stringify({
+                "name": name,
+                "hp_ivs": hp_ivs,
+                "attack_ivs": attack_ivs,
+                "defense_ivs": defense_ivs,
+                "special_attack_ivs": special_attack_ivs,
+                "special_defense_ivs": special_defense_ivs,
+                "speed_ivs": speed_ivs,
+                "hp_bs": hp_bs,
+                "attack_bs": attack_bs,
+                "defense_bs": defense_bs,
+                "special_attack_bs": special_attack_bs,
+                "special_defense_bs": special_defense_bs,
+                "speed_bs": speed_bs,
+                "level": level,
+                "increase_ability_index": increase_ability_index,
+                "decrease_ability_index": decrease_ability_index
+            }),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                var statsArray = data.data;
+                if (statsArray == null) {
+                    $("#errorMsg").empty();
+                    var errorMsg = data.msg;
+                    $("#errorMsg").append("<p style='color:red'>" + errorMsg + "</p>");
+                    $("#errorMsg").append("<p style='color:red'>请确认输入参数是否正确！</p>");
+                }
+                else {
+                    $("#hp_stats2").text(statsArray.hp_stats);
+                    $("#attack_stats2").text(statsArray.attack_stats);
+                    $("#defense_stats2").text(statsArray.defense_stats);
+                    $("#special_attack_stats2").text(statsArray.special_attack_stats);
+                    $("#special_defense_stats2").text(statsArray.special_defense_stats);
+                    $("#speed_stats2").text(statsArray.speed_stats);
+                    $("#errorMsg").empty();
+                }
+            }
+        });
+    }
+
+    function setIvs1() {
+        if ($("#all_311").val() === "全31") {
+            $("#all_311").attr("value", "全0");
+            $("#hp_ivs1").val(31);
+            $("#attack_ivs1").val(31);
+            $("#defense_ivs1").val(31);
+            $("#special_attack_ivs1").val(31);
+            $("#special_defense_ivs1").val(31);
+            $("#speed_ivs1").val(31);
+        }
+        else if ($("#all_311").val() === "全0") {
+            $("#all_311").attr("value", "全31");
+            $("#hp_ivs1").val(0);
+            $("#attack_ivs1").val(0);
+            $("#defense_ivs1").val(0);
+            $("#special_attack_ivs1").val(0);
+            $("#special_defense_ivs1").val(0);
+            $("#speed_ivs1").val(0);
+        }
+    }
+
+    function setIvs2() {
+        if ($("#all_312").val() === "全31") {
+            $("#all_312").attr("value", "全0");
+            $("#hp_ivs2").val(31);
+            $("#attack_ivs2").val(31);
+            $("#defense_ivs2").val(31);
+            $("#special_attack_ivs2").val(31);
+            $("#special_defense_ivs2").val(31);
+            $("#speed_ivs2").val(31);
+        }
+        else if ($("#all_312").val() === "全0") {
+            $("#all_312").attr("value", "全31");
+            $("#hp_ivs2").val(0);
+            $("#attack_ivs2").val(0);
+            $("#defense_ivs2").val(0);
+            $("#special_attack_ivs2").val(0);
+            $("#special_defense_ivs2").val(0);
+            $("#speed_ivs2").val(0);
+        }
+    }
+
+    function getAllTokusei() {
+        $.ajax({
+            url: "/pokemon/get/all/tokusei",
+            type: "GET",
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                var list = data.data;
+                for (var i = 0; i < list.length; i++) {
+                    var tokusei = list[i].name;
+                    $("#tokusei_list1").append("<option value='" + tokusei + "'></option>");
+                    $("#tokusei_list2").append("<option value='" + tokusei + "'></option>");
+                }
+            }
+        });
+    }
+
+    function getAllItem() {
+        $.ajax({
+            url: "/pokemon/get/all/item",
+            type: "GET",
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                var list = data.data;
+                for (var i = 0; i < list.length; i++) {
+                    var item = list[i].name;
+                    $("#item_list1").append("<option value='" + item + "'></option>");
+                    $("#item_list2").append("<option value='" + item + "'></option>");
+                }
+            }
+        });
+    }
+
+    function getAllWaza() {
+        $.ajax({
+            url: "/pokemon/get/all/waza",
+            type: "GET",
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                var list = data.data;
+                for (var i = 0; i < list.length; i++) {
+                    var waza = list[i].name;
+                    $("#waza_list1").append("<option value='" + waza + "'></option>");
+                    $("#waza_list2").append("<option value='" + waza + "'></option>");
+                }
+            }
+        });
+    }
+
+    function getDamage(){
+        // 攻击方pokemon
+        var attack_name = $("#name1").text();
+        var attack_hp_stats = $("#hp_stats1").text();
+        var attack_attack_stats = $("#attack_stats1").text();
+        var attack_defense_stats = $("#defense_stats1").text();
+        var attack_special_attack_stats = $("#special_attack_stats1").text();
+        var attack_special_defense_stats = $("#special_defense_stats1").text();
+        var attack_speed_stats = $("#speed_stats1").text();
+        var attack_level = $("#level1").val();
+        var attack_tokusei = $("#tokusei1").val();
+        var attack_item = $("#item1").val();
+        var attack_waza = $("#waza1").val();
+        var attack_attack_ability_level = $("#attack_ability_level1").val();
+        var attack_special_attack_ability_level = $("#special_attack_ability_level1").val();
+        var attack_status_condition = $("#status_conditions1").val();
+
+        // 防守方pokemon
+        var defense_name = $("#name2").text();
+        var defense_hp_stats = $("#hp_stats2").text();
+        var defense_attack_stats = $("#attack_stats2").text();
+        var defense_defense_stats = $("#defense_stats2").text();
+        var defense_special_attack_stats = $("#special_attack_stats2").text();
+        var defense_special_defense_stats = $("#special_defense_stats2").text();
+        var defense_speed_stats = $("#speed_stats2").text();
+        var defense_level = $("#level2").val();
+        var defense_tokusei = $("#tokusei2").val();
+        var defense_item = $("#item2").val();
+        var defense_waza = $("#waza2").val();
+        var defense_defense_ability_level = $("#defense_ability_level2").val();
+        var defense_special_defense_ability_level = $("#special_defense_ability_level2").val();
+        var defense_status_condition = $("#status_conditions2").val();
+
+        // 是否会心
+        var is_ct = $("#is_ct1").is(":checked");
+
+        $.ajax({
+            url: "/pokemon/get/damage/range",
+            type: "POST",
+            data: JSON.stringify({
+                "attack_pokemon_name": attack_name,
+                "attack_hp_stats": attack_hp_stats,
+                "attack_attack_stats": attack_attack_stats,
+                "attack_defense_stats": attack_defense_stats,
+                "attack_special_attack_stats": attack_special_attack_stats,
+                "attack_special_defense_stats": attack_special_defense_stats,
+                "attack_speed_stats": attack_speed_stats,
+                "attack_level": attack_level,
+                "attack_tokusei": attack_tokusei,
+                "attack_item": attack_item,
+                "attack_waza": attack_waza,
+                "attack_ability_level": attack_attack_ability_level,
+                "special_attack_ability_level": attack_special_attack_ability_level,
+                "attack_status_condition": attack_status_condition,
+                "defense_pokemon_name": defense_name,
+                "defense_hp_stats": defense_hp_stats,
+                "defense_attack_stats": defense_attack_stats,
+                "defense_defense_stats": defense_defense_stats,
+                "defense_special_attack_stats": defense_special_attack_stats,
+                "defense_special_defense_stats": defense_special_defense_stats,
+                "defense_speed_stats": defense_speed_stats,
+                "defense_level": defense_level,
+                "defense_tokusei": defense_tokusei,
+                "defense_item": defense_item,
+                "defense_waza": defense_waza,
+                "defense_ability_level": defense_defense_ability_level,
+                "special_defense_ability_level": defense_special_defense_ability_level,
+                "defense_status_condition": defense_status_condition,
+                "is_critical_hit": is_ct
+            }),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                var res = data.data;
+                if (res == null){
+                    $("#damage_range").empty();
+                    $("#damage_range").append("<p style='color:red;'>缺少参数!</p>");
+                }
+                else {
+                    $("#damage_range").empty();
+                    $("#damage_range").append("<p style='color:red;'>" + res + "</p>");
+                }
+            }
+        });
+
+        $.ajax({
+            url: "/pokemon/get/damage/range",
+            type: "POST",
+            data: JSON.stringify({
+                "attack_pokemon_name": attack_name,
+                "attack_hp_stats": attack_hp_stats,
+                "attack_attack_stats": attack_attack_stats,
+                "attack_defense_stats": attack_defense_stats,
+                "attack_special_attack_stats": attack_special_attack_stats,
+                "attack_special_defense_stats": attack_special_defense_stats,
+                "attack_speed_stats": attack_speed_stats,
+                "attack_level": attack_level,
+                "attack_tokusei": attack_tokusei,
+                "attack_item": attack_item,
+                "attack_waza": attack_waza,
+                "attack_ability_level": attack_attack_ability_level,
+                "special_attack_ability_level": attack_special_attack_ability_level,
+                "attack_status_condition": attack_status_condition,
+                "defense_pokemon_name": defense_name,
+                "defense_hp_stats": defense_hp_stats,
+                "defense_attack_stats": defense_attack_stats,
+                "defense_defense_stats": defense_defense_stats,
+                "defense_special_attack_stats": defense_special_attack_stats,
+                "defense_special_defense_stats": defense_special_defense_stats,
+                "defense_speed_stats": defense_speed_stats,
+                "defense_level": defense_level,
+                "defense_tokusei": defense_tokusei,
+                "defense_item": defense_item,
+                "defense_waza": defense_waza,
+                "defense_ability_level": defense_defense_ability_level,
+                "special_defense_ability_level": defense_special_defense_ability_level,
+                "defense_status_condition": defense_status_condition,
+                "is_critical_hit": is_ct
+            }),
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+                var res = data.data;
+                if (res == null){
+                    $("#min_damage").empty();
+                    $("#max_damage").empty();
+                    $("#possible_damages").empty();
+                    $("#min_damage").append("<p style='color:red;'>缺少参数!</p>");
+                    $("#max_damage").append("<p style='color:red;'>缺少参数!</p>");
+                    $("#possible_damages").append("<p style='color:red;'>缺少参数!</p>");
+                }
+                else {
+                    $("#min_damage").empty();
+                    $("#max_damage").empty();
+                    $("#possible_damages").empty();
+                    var minRate = new String(res.min_damage_rate);
+                    var maxRate = new String(res.max_damage_rate);
+                    $("#min_damage").append("<p style='color:red;'>" + minRate + "</p>");
+                    $("#max_damage").append("<p style='color:red;'>" + maxRate + "</p>");
+                    var possibleDamages = res.possible_damages;
+                    $("#possible_damages").append("<p style='color:red;'>" + possibleDamages + "</p>");
+                }
+            }
+        });
+    }
+
+
+
+</script>
+</body>
+</html>
