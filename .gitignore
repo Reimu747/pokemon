@@ -16,7 +16,7 @@
 *.iml
 *.ipr
 target
-src/main/resources
+build.sh
 
 ### NetBeans ###
 /nbproject/private/
