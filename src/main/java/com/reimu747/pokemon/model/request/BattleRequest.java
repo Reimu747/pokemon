@@ -36,6 +36,9 @@ public class BattleRequest {
     @JsonProperty(value = "attack_level")
     private Integer attackLevel;
 
+    @JsonProperty(value = "attack_current_hp")
+    private Integer attackCurrentHp;
+
     @JsonProperty(value = "attack_tokusei")
     private String attackTokusei;
     @JsonProperty(value = "attack_item")
@@ -73,6 +76,9 @@ public class BattleRequest {
     @JsonProperty(value = "defense_level")
     private Integer defenseLevel;
 
+    @JsonProperty(value = "defense_current_hp")
+    private Integer defenseCurrentHp;
+
     @JsonProperty(value = "defense_tokusei")
     private String defenseTokusei;
     @JsonProperty(value = "defense_item")
@@ -93,5 +99,26 @@ public class BattleRequest {
      */
     @JsonProperty(value = "is_critical_hit")
     private Boolean isCriticalHit;
-    //TODO 场地影响
+
+    /**
+     * 场地
+     */
+    @JsonProperty(value = "terrain_index")
+    private Integer terrainIndex;
+    @JsonProperty(value = "weather_index")
+    private Integer weatherIndex;
+    @JsonProperty(value = "is_gravity")
+    private Boolean isGravity;
+    @JsonProperty(value = "is_reflect")
+    private Boolean isReflect;
+    @JsonProperty(value = "is_light_screen")
+    private Boolean isLightScreen;
+    @JsonProperty(value = "is_protect")
+    private Boolean isProtect;
+    @JsonProperty(value = "is_foresight")
+    private Boolean isForesight;
+    @JsonProperty(value = "is_aurora_veil")
+    private Boolean isAuroraVeil;
+
+    // TODO 其他场地影响
 }

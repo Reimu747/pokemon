@@ -290,6 +290,17 @@
     </tr>
     <tr>
         <td align="center" colspan="5">
+            <input type="text" id="current_hp1">
+        </td>
+
+        <td align="center">现有HP</td>
+
+        <td align="center" colspan="5">
+            <input type="text" id="current_hp2">
+        </td>
+    </tr>
+    <tr>
+        <td align="center" colspan="5">
             <input id="tokusei1" list="tokusei_list1">
             <datalist id="tokusei_list1"></datalist>
         </td>
@@ -428,13 +439,32 @@
     </tr>
 
     <tr>
-        <td align="center" colspan="6"></td>
+        <td align="center" colspan="4">
+            <input type="radio" name="terrain" value="0" checked>无场地
+            <input type="radio" name="terrain" value="1">电气场地
+            <input type="radio" name="terrain" value="2">青草场地
+            <input type="radio" name="terrain" value="3">薄雾场地
+            <input type="radio" name="terrain" value="4">精神场地
+        </td>
+        <td align="center">
+            <input id="is_gravity" type="checkbox">重力
+        </td>
+        <td align="center" rowspan="3">场地</td>
         <td align="center" colspan="5">
             A攻击B<input type="button" id="get_damage" value="计算伤害值" onclick="getDamage()">
         </td>
     </tr>
     <tr>
-        <td align="center" colspan="6"></td>
+        <td align="center" colspan="5">
+            <input type="radio" name="weather" value="0" checked>无天气
+            <input type="radio" name="weather" value="1">下雨
+            <input type="radio" name="weather" value="2">大雨
+            <input type="radio" name="weather" value="3">大晴天
+            <input type="radio" name="weather" value="4">大日照
+            <input type="radio" name="weather" value="5">冰雹
+            <input type="radio" name="weather" value="6">沙暴
+            <input type="radio" name="weather" value="7">乱流
+        </td>
         <td align="center">伤害百分比</td>
         <td align="center">最小伤害</td>
         <td align="center" id="min_damage"></td>
@@ -442,7 +472,13 @@
         <td align="center" id="max_damage"></td>
     </tr>
     <tr>
-        <td align="center" colspan="6"></td>
+        <td align="center" colspan="5">
+            <input id="is_reflect" type="checkbox">反射壁
+            <input id="is_light_screen" type="checkbox">光墙
+            <input id="is_protect" type="checkbox">守住
+            <input id="is_foresight" type="checkbox">识破
+            <input id="is_aurora_veil" type="checkbox">极光幕
+        </td>
         <td align="center" colspan="2">可能的伤害值</td>
         <td align="center" colspan="3" id="possible_damages"></td>
     </tr>
@@ -570,6 +606,7 @@
                     $("#special_attack_stats1").text(statsArray.special_attack_stats);
                     $("#special_defense_stats1").text(statsArray.special_defense_stats);
                     $("#speed_stats1").text(statsArray.speed_stats);
+                    $("#current_hp1").val(statsArray.hp_stats);
                     $("#errorMsg").empty();
                 }
             }
@@ -634,6 +671,7 @@
                     $("#special_attack_stats2").text(statsArray.special_attack_stats);
                     $("#special_defense_stats2").text(statsArray.special_defense_stats);
                     $("#speed_stats2").text(statsArray.speed_stats);
+                    $("#current_hp2").val(statsArray.hp_stats);
                     $("#errorMsg").empty();
                 }
             }
@@ -716,7 +754,7 @@
 
     function getAllWaza() {
         $.ajax({
-            url: "/pokemon/get/all/waza",
+            url: "/pokemon/get/all/attack/waza",
             type: "GET",
             contentType: "application/json;charset=utf-8",
             success: function (data) {
@@ -740,6 +778,7 @@
         var attack_special_defense_stats = $("#special_defense_stats1").text();
         var attack_speed_stats = $("#speed_stats1").text();
         var attack_level = $("#level1").val();
+        var attack_current_hp = $("#current_hp1").val();
         var attack_tokusei = $("#tokusei1").val();
         var attack_item = $("#item1").val();
         var attack_waza = $("#waza1").val();
@@ -756,6 +795,7 @@
         var defense_special_defense_stats = $("#special_defense_stats2").text();
         var defense_speed_stats = $("#speed_stats2").text();
         var defense_level = $("#level2").val();
+        var defense_current_hp = $("#current_hp2").val();
         var defense_tokusei = $("#tokusei2").val();
         var defense_item = $("#item2").val();
         var defense_waza = $("#waza2").val();
@@ -766,53 +806,15 @@
         // 是否会心
         var is_ct = $("#is_ct1").is(":checked");
 
-        $.ajax({
-            url: "/pokemon/get/damage/range",
-            type: "POST",
-            data: JSON.stringify({
-                "attack_pokemon_name": attack_name,
-                "attack_hp_stats": attack_hp_stats,
-                "attack_attack_stats": attack_attack_stats,
-                "attack_defense_stats": attack_defense_stats,
-                "attack_special_attack_stats": attack_special_attack_stats,
-                "attack_special_defense_stats": attack_special_defense_stats,
-                "attack_speed_stats": attack_speed_stats,
-                "attack_level": attack_level,
-                "attack_tokusei": attack_tokusei,
-                "attack_item": attack_item,
-                "attack_waza": attack_waza,
-                "attack_ability_level": attack_attack_ability_level,
-                "special_attack_ability_level": attack_special_attack_ability_level,
-                "attack_status_condition": attack_status_condition,
-                "defense_pokemon_name": defense_name,
-                "defense_hp_stats": defense_hp_stats,
-                "defense_attack_stats": defense_attack_stats,
-                "defense_defense_stats": defense_defense_stats,
-                "defense_special_attack_stats": defense_special_attack_stats,
-                "defense_special_defense_stats": defense_special_defense_stats,
-                "defense_speed_stats": defense_speed_stats,
-                "defense_level": defense_level,
-                "defense_tokusei": defense_tokusei,
-                "defense_item": defense_item,
-                "defense_waza": defense_waza,
-                "defense_ability_level": defense_defense_ability_level,
-                "special_defense_ability_level": defense_special_defense_ability_level,
-                "defense_status_condition": defense_status_condition,
-                "is_critical_hit": is_ct
-            }),
-            contentType: "application/json;charset=utf-8",
-            success: function (data) {
-                var res = data.data;
-                if (res == null){
-                    $("#damage_range").empty();
-                    $("#damage_range").append("<p style='color:red;'>缺少参数!</p>");
-                }
-                else {
-                    $("#damage_range").empty();
-                    $("#damage_range").append("<p style='color:red;'>" + res + "</p>");
-                }
-            }
-        });
+        // 场地
+        var terrain_index = $('input[name="terrain"]:checked').val();
+        var weather_index = $('input[name="weather"]:checked').val();
+        var is_gravity = $("#is_gravity").is(":checked");
+        var is_reflect = $("#is_reflect").is(":checked");
+        var is_light_screen = $("#is_light_screen").is(":checked");
+        var is_protect = $("#is_protect").is(":checked");
+        var is_foresight = $("#is_foresight").is(":checked");
+        var is_aurora_veil = $("#is_aurora_veil").is(":checked");
 
         $.ajax({
             url: "/pokemon/get/damage/range",
@@ -826,6 +828,7 @@
                 "attack_special_defense_stats": attack_special_defense_stats,
                 "attack_speed_stats": attack_speed_stats,
                 "attack_level": attack_level,
+                "attack_current_hp": attack_current_hp,
                 "attack_tokusei": attack_tokusei,
                 "attack_item": attack_item,
                 "attack_waza": attack_waza,
@@ -840,18 +843,29 @@
                 "defense_special_defense_stats": defense_special_defense_stats,
                 "defense_speed_stats": defense_speed_stats,
                 "defense_level": defense_level,
+                "defense_current_hp": defense_current_hp,
                 "defense_tokusei": defense_tokusei,
                 "defense_item": defense_item,
                 "defense_waza": defense_waza,
                 "defense_ability_level": defense_defense_ability_level,
                 "special_defense_ability_level": defense_special_defense_ability_level,
                 "defense_status_condition": defense_status_condition,
-                "is_critical_hit": is_ct
+                "is_critical_hit": is_ct,
+                "terrain_index": terrain_index,
+                "weather_index": weather_index,
+                "is_gravity": is_gravity,
+                "is_reflect": is_reflect,
+                "is_light_screen": is_light_screen,
+                "is_protect": is_protect,
+                "is_foresight": is_foresight,
+                "is_aurora_veil": is_aurora_veil
             }),
             contentType: "application/json;charset=utf-8",
             success: function (data) {
                 var res = data.data;
                 if (res == null){
+                    $("#damage_range").empty();
+                    $("#damage_range").append("<p style='color:red;'>缺少参数!</p>");
                     $("#min_damage").empty();
                     $("#max_damage").empty();
                     $("#possible_damages").empty();
@@ -860,6 +874,8 @@
                     $("#possible_damages").append("<p style='color:red;'>缺少参数!</p>");
                 }
                 else {
+                    $("#damage_range").empty();
+                    $("#damage_range").append("<p style='color:red;'>" + res + "</p>");
                     $("#min_damage").empty();
                     $("#max_damage").empty();
                     $("#possible_damages").empty();

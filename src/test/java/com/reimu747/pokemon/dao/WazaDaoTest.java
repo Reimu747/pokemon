@@ -24,5 +24,6 @@ public class WazaDaoTest
     public void getWazaByNameTest()
     {
         System.out.println(wazaDao.getWazaByName("十万伏特"));
+        System.out.println(wazaDao.getAllWaza());
     }
 }

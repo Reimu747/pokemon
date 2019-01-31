@@ -3,6 +3,8 @@ package com.reimu747.pokemon.controller;
 import com.reimu747.pokemon.model.Result;
 import com.reimu747.pokemon.model.enums.ErrorCodeEnum;
 import com.reimu747.pokemon.model.enums.StatusConditionEnum;
+import com.reimu747.pokemon.model.enums.TerrainEnum;
+import com.reimu747.pokemon.model.enums.WeatherEnum;
 import com.reimu747.pokemon.model.request.BattleRequest;
 import com.reimu747.pokemon.model.response.DamageResponse;
 import com.reimu747.pokemon.model.vo.*;
@@ -28,7 +30,8 @@ import java.util.List;
  **/
 @Slf4j
 @RestController
-public class BattleController {
+public class BattleController
+{
     @Autowired
     private BattleService battleService;
     @Autowired
@@ -42,8 +45,10 @@ public class BattleController {
 
     @PostMapping(value = "/get/damage/range")
     public Result<DamageResponse> getDamageRange(@Validated @RequestBody BattleRequest battleRequest,
-                                                 BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
+                                                 BindingResult bindingResult)
+    {
+        if (bindingResult.hasErrors())
+        {
             log.error("battleRequest: {}", battleRequest);
             return ResultUtil.failWithMsg(ErrorCodeEnum.INVALID_PARAM);
         }
@@ -70,9 +75,12 @@ public class BattleController {
                 .itemVO(attackItem)
                 .attackLevel(battleRequest.getAttackAbilityLevel())
                 .specialAttackLevel(battleRequest.getSpecialAttackAbilityLevel())
+                .hpNow(battleRequest.getAttackCurrentHp())
                 .build();
-        for (StatusConditionEnum statusConditionEnum : StatusConditionEnum.values()) {
-            if (attackStatusCondition.equals(statusConditionEnum.getName())) {
+        for (StatusConditionEnum statusConditionEnum : StatusConditionEnum.values())
+        {
+            if (attackStatusCondition.equals(statusConditionEnum.getName()))
+            {
                 attackPokemon.setStatusConditionEnum(statusConditionEnum);
             }
         }
@@ -82,7 +90,7 @@ public class BattleController {
                 .attackStats(battleRequest.getAttackAttackStats())
                 .defenseStats(battleRequest.getAttackDefenseStats())
                 .specialAttackStats(battleRequest.getAttackSpecialAttackStats())
-                .specialDefenseStats(battleRequest.getAttackDefenseStats())
+                .specialDefenseStats(battleRequest.getAttackSpecialDefenseStats())
                 .speedStats(battleRequest.getAttackSpeedStats())
                 .build();
         attackPokemon.setStatsVO(attackStats);
@@ -96,9 +104,12 @@ public class BattleController {
                 .itemVO(defenseItem)
                 .defenseLevel(battleRequest.getDefenseAbilityLevel())
                 .specialDefenseLevel(battleRequest.getSpecialDefenseAbilityLevel())
+                .hpNow(battleRequest.getDefenseCurrentHp())
                 .build();
-        for (StatusConditionEnum statusConditionEnum : StatusConditionEnum.values()) {
-            if (defenseStatusCondition.equals(statusConditionEnum.getName())) {
+        for (StatusConditionEnum statusConditionEnum : StatusConditionEnum.values())
+        {
+            if (defenseStatusCondition.equals(statusConditionEnum.getName()))
+            {
                 defensePokemon.setStatusConditionEnum(statusConditionEnum);
             }
         }
@@ -108,19 +119,41 @@ public class BattleController {
                 .attackStats(battleRequest.getDefenseAttackStats())
                 .defenseStats(battleRequest.getDefenseDefenseStats())
                 .specialAttackStats(battleRequest.getDefenseSpecialAttackStats())
-                .specialDefenseStats(battleRequest.getDefenseDefenseStats())
+                .specialDefenseStats(battleRequest.getDefenseSpecialDefenseStats())
                 .speedStats(battleRequest.getDefenseSpeedStats())
                 .build();
         defensePokemon.setStatsVO(defenseStats);
         BeanUtils.copyProperties(pokemonVO, defensePokemon);
 
-        // TODO 场地影响
-        double[] damageRange = battleService.getDamageRange(attackPokemon, defensePokemon, waza, new FieldVO(),
+        // TODO 其他场地影响
+        FieldVO field = new FieldVO();
+        for (TerrainEnum terrainEnum : TerrainEnum.values())
+        {
+            if (battleRequest.getTerrainIndex() == terrainEnum.getId())
+            {
+                field.setTerrain(terrainEnum);
+            }
+        }
+        for (WeatherEnum weatherEnum : WeatherEnum.values())
+        {
+            if (battleRequest.getWeatherIndex() == weatherEnum.getId())
+            {
+                field.setWeather(weatherEnum);
+            }
+        }
+        field.setIsGravity(battleRequest.getIsGravity());
+        field.setIsReflect(battleRequest.getIsReflect());
+        field.setIsLightScreen(battleRequest.getIsLightScreen());
+        field.setIsProtect(battleRequest.getIsProtect());
+        field.setIsForesight(battleRequest.getIsForesight());
+        field.setIsAuroraVeil(battleRequest.getIsAuroraVeil());
+
+        double[] damageRange = battleService.getDamageRange(attackPokemon, defensePokemon, waza, field,
                 battleRequest.getIsCriticalHit());
         double minDamage = damageRange[0];
         double maxDamage = damageRange[1];
 
-        List possibleDamages = battleService.getPossibleDamages(attackPokemon, defensePokemon, waza, new FieldVO(),
+        List<Integer> possibleDamages = battleService.getPossibleDamages(attackPokemon, defensePokemon, waza, field,
                 battleRequest.getIsCriticalHit());
 
         DamageResponse res = DamageResponse

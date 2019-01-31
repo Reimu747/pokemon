@@ -31,4 +31,20 @@ public class WazaController {
         List<WazaVO> list = wazaService.getAllWaza();
         return ResultUtil.ok(list);
     }
+
+    /**
+     * 返回所有进入伤害计算器的招式的列表
+     * 例如 双倍奉还 这样的招式没有计算的意义，因此不进入伤害计算器的招式列表
+     * @return 所有进入伤害计算器的招式的列表
+     */
+    @GetMapping("get/all/attack/waza")
+    public Result<List<WazaVO>> getAllAttackWaza()
+    {
+        List<WazaVO> list = wazaService.getAllWaza();
+        list.remove(wazaService.getWazaByName("双倍奉还"));
+        list.remove(wazaService.getWazaByName("镜面反射"));
+        list.remove(wazaService.getWazaByName("忍耐"));
+        list.remove(wazaService.getWazaByName("金属爆炸"));
+        return ResultUtil.ok(list);
+    }
 }

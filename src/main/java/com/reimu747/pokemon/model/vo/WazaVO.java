@@ -19,4 +19,6 @@ public class WazaVO
     private Integer power;
     private Integer hitRate;
     private String wazaTypeName;
+    private Integer isDirectAttack;
+    private Integer isKoteiWaza;
 }

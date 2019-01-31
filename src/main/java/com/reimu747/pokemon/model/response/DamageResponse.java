@@ -21,5 +21,5 @@ public class DamageResponse {
     @JsonProperty(value = "max_damage_rate")
     private Double maxDamageRate;
     @JsonProperty(value = "possible_damages")
-    private List possibleDamages;
+    private List<Integer> possibleDamages;
 }
