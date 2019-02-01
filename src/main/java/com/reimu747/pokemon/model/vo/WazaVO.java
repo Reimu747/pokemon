@@ -21,4 +21,6 @@ public class WazaVO
     private String wazaTypeName;
     private Integer isDirectAttack;
     private Integer isKoteiWaza;
+    private Integer hasSecondaryEffect;
+    private Integer isSound;
 }

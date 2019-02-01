@@ -76,6 +76,9 @@ public class BattleController
                 .attackLevel(battleRequest.getAttackAbilityLevel())
                 .specialAttackLevel(battleRequest.getSpecialAttackAbilityLevel())
                 .hpNow(battleRequest.getAttackCurrentHp())
+                .gender(battleRequest.getAttackGender())
+                .isFlashFire(battleRequest.getAttackIsFlashFire())
+                .isDig(battleRequest.getAttackIsDig())
                 .build();
         for (StatusConditionEnum statusConditionEnum : StatusConditionEnum.values())
         {
@@ -105,6 +108,9 @@ public class BattleController
                 .defenseLevel(battleRequest.getDefenseAbilityLevel())
                 .specialDefenseLevel(battleRequest.getSpecialDefenseAbilityLevel())
                 .hpNow(battleRequest.getDefenseCurrentHp())
+                .gender(battleRequest.getDefenseGender())
+                .isFlashFire(battleRequest.getDefenseIsFlashFire())
+                .isDig(battleRequest.getDefenseIsDig())
                 .build();
         for (StatusConditionEnum statusConditionEnum : StatusConditionEnum.values())
         {

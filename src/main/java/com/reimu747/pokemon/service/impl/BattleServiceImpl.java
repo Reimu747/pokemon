@@ -1,5 +1,6 @@
 package com.reimu747.pokemon.service.impl;
 
+import com.alibaba.druid.sql.visitor.functions.If;
 import com.reimu747.pokemon.dao.TypeDao;
 import com.reimu747.pokemon.dao.WazaDao;
 import com.reimu747.pokemon.model.enums.StatusConditionEnum;
@@ -57,6 +58,7 @@ public class BattleServiceImpl implements BattleService
     private static final double BASE_DENOMINATOR = 2;
     private static final double STATS_RATE_ONE = 0.5D;
     private static final double STATS_RATE_TWO = 1.5D;
+    private static final double STATS_RATE_THREE = 2.0D;
 
     /**
      * 招式相关
@@ -64,10 +66,21 @@ public class BattleServiceImpl implements BattleService
     private static final String[] PULSE_WAZAS = {"波导弹", "水之波动", "龙之波动", "恶之波动", "根源波动"};
     private static final String[] KOTEI_WAZAS = {"音爆", "龙之怒", "地球上投", "黑夜魔影", "精神波", "愤怒门牙", "蛮干", "双倍奉还", "镜面反射",
             "忍耐", "金属爆炸", "搏命", "自然之怒", "巨人卫士·阿罗拉", "地裂", "断头钳", "角钻", "绝对零度"};
+    private static final String[] EXPLOSION_WAZAS = {"自爆", "大爆炸", "惊爆大头"};
+    private static final String[] DIG_ABLE_WAZAS = {"地震", "剧毒", "震级", "音爆"};
+    private static final String ENDEAVOR = "蛮干";
+    private static final String ACROBATICS = "杂技";
+    private static final String THOUSAND_ARROWS = "千箭齐发";
     private static final double POWER_RATE_ONE = 1.5D;
     private static final double POWER_RATE_TWO = 1.3D;
     private static final double POWER_RATE_THREE = 0.5D;
-    private static final double POWER_RATE_FOUR = 0.75D;
+    /**
+     * TODO 特性 斗争心中，描述为性别不同时技能威力为0.75倍，但 https://pokemonshowdown.com/damagecalc/ 中的代码写的是(0xCCD / 0x1000)倍，待确认
+     */
+    private static final double POWER_RATE_FOUR = (double) 0xCCD / 0x1000;
+    private static final double POWER_RATE_FIVE = 1.25D;
+    private static final double POWER_RATE_SIX = 2.0D;
+    private static final double POWER_RATE_SEVEN = 1.2D;
     private static final double HP_RATE_ONE = 1.0D / 3.0D;
 
     /**
@@ -135,6 +148,33 @@ public class BattleServiceImpl implements BattleService
     private static final String TINTED_LENS = "有色眼镜";
     private static final String SWARM = "虫之预感";
     private static final String ADAPTABILITY = "适应力";
+    private static final String GUTS = "毅力";
+    private static final String HUSTLE = "活力";
+    private static final String LIGHTNING_ROD = "避雷针";
+    private static final String RIVALRY = "斗争心";
+    private static final String SHEER_FORCE = "强行";
+    private static final String UNAWARE = "纯朴";
+    private static final String FLASH_FIRE = "引火";
+    private static final String INFILTRATOR = "穿透";
+    private static final String DRY_SKIN = "干燥皮肤";
+    private static final String DAMP = "湿气";
+    private static final String SAND_FORCE = "沙之力";
+    private static final String TECHNICIAN = "技术高手";
+    private static final double TECHNICIAN_EFFECTIVE_POWER = 60.0D;
+    private static final String FUR_COAT = "毛皮大衣";
+    private static final String CLOUD_NINE = "无关天气";
+    private static final String WATER_ABSORB = "储水";
+    private static final String NO_GUARD = "无防守";
+    private static final String GALVANIZE = "电气皮肤";
+    private static final String SHELL_ARMOR = "硬壳盔甲";
+    private static final String ANALYTIC = "分析";
+    private static final String LEVITATE = "漂浮";
+    private static final String SOUNDPROOF = "隔音";
+
+    /**
+     * 道具
+     */
+    private static final String TYPE_GEM = "属性宝石";
 
     /**
      * 属性
@@ -144,6 +184,18 @@ public class BattleServiceImpl implements BattleService
     private static final String FIRE = "火";
     private static final String WATER = "水";
     private static final String BUG = "虫";
+    private static final String ELECTRIC = "电";
+    private static final String GROUND = "地面";
+    private static final String ROCK = "岩石";
+    private static final String STEEL = "钢";
+    private static final String NORMAL = "普通";
+
+    /**
+     * 性别
+     */
+    private static final String FEMALE = "雌";
+    private static final String MALE = "雄";
+    private static final String UNKNOWN = "不明";
 
     /**
      * 计算招式造成伤害的百分比区间
@@ -175,8 +227,38 @@ public class BattleServiceImpl implements BattleService
     public List<Integer> getPossibleDamages(PokemonInstanceVO attackPokemon, PokemonInstanceVO defensePokemon,
                                             WazaVO waza, FieldVO field, boolean isCriticalHit)
     {
+        // 特性 硬壳盔甲
+        if (SHELL_ARMOR.equals(defensePokemon.getTokuseiVO().getName()))
+        {
+            isCriticalHit = false;
+        }
+        // 特性 无关天气
+        if (CLOUD_NINE.equals(attackPokemon.getTokuseiVO().getName()) || CLOUD_NINE.equals(defensePokemon.getTokuseiVO().getName()))
+        {
+            field.setWeather(null);
+        }
         // 如果属性克制为无效，伤害值为0
         if (getTypeRelationRate(defensePokemon, waza) == NOT_EFFECTIVE)
+        {
+            return Collections.singletonList(MIN_DAMAGE_RATE);
+        }
+        // 特性 漂浮
+        if (LEVITATE.equals(defensePokemon.getTokuseiVO().getName()))
+        {
+            if (GROUND.equals(waza.getTypeName()) && !field.getIsGravity() && !THOUSAND_ARROWS.equals(waza.getName()))
+            {
+                return Collections.singletonList(MIN_DAMAGE_RATE);
+            }
+        }
+        // 特性 隔音
+        if (SOUNDPROOF.equals(defensePokemon.getTokuseiVO().getName()) && waza.getIsSound() == 1)
+        {
+            return Collections.singletonList(MIN_DAMAGE_RATE);
+        }
+        // 如果防御方处于挖洞状态 且技能不能击中挖洞状态 且双方特性不是无防守
+        boolean digEffective =
+                defensePokemon.getIsDig() && !Arrays.asList(DIG_ABLE_WAZAS).contains(waza.getName()) && (NO_GUARD.equals(attackPokemon.getTokuseiVO().getName()) || NO_GUARD.equals(defensePokemon.getTokuseiVO().getName()));
+        if (digEffective)
         {
             return Collections.singletonList(MIN_DAMAGE_RATE);
         }
@@ -189,10 +271,12 @@ public class BattleServiceImpl implements BattleService
 
             for (int i = 0; i < possibleDamages.size(); i++)
             {
-                if (possibleDamages.get(i) < MIN_DAMAGE && !"蛮干".equals(waza.getName()))
+                // 技能 蛮干 有可能不造成任何伤害
+                if (possibleDamages.get(i) < MIN_DAMAGE && !ENDEAVOR.equals(waza.getName()))
                 {
                     possibleDamages.set(i, MIN_DAMAGE);
                 }
+                // 其他技能 至少造成1点伤害
                 else if (possibleDamages.get(i) > defensePokemon.getHpNow())
                 {
                     possibleDamages.set(i, defensePokemon.getHpNow());
@@ -200,10 +284,18 @@ public class BattleServiceImpl implements BattleService
             }
             return possibleDamages;
         }
+        // 特性 电气皮肤
+        if (GALVANIZE.equals(attackPokemon.getTokuseiVO().getName()))
+        {
+            if (NORMAL.equals(waza.getTypeName()))
+            {
+                waza.setTypeName(ELECTRIC);
+            }
+        }
         // 攻击方等级
         double level = attackPokemon.getLevel();
         // 技能威力
-        double wazaPower = getWazaPower(attackPokemon, waza, field);
+        double wazaPower = getWazaPower(attackPokemon, defensePokemon, waza, field);
         // 攻击方攻击力
         double attackPoint;
         // 如果不是攻击招式
@@ -230,6 +322,34 @@ public class BattleServiceImpl implements BattleService
         }
         // A = floor(攻击力 × 技能威力 × (攻击方等级 × 2 ÷ 5 + 2) ÷ 防御力 ÷ 50 + 2)
         int damageA = (int) (attackPoint * wazaPower * (level * 2 / 5 + 2) / defensePoint / 50 + 2);
+        // 特性 避雷针
+        if (LIGHTNING_ROD.equals(defensePokemon.getTokuseiVO().getName()) && ELECTRIC.equals(waza.getTypeName()))
+        {
+            return Collections.singletonList(MIN_DAMAGE_RATE);
+        }
+        // 特性 引火
+        if (FLASH_FIRE.equals(defensePokemon.getTokuseiVO().getName()) && FIRE.equals(waza.getTypeName()))
+        {
+            return Collections.singletonList(MIN_DAMAGE_RATE);
+        }
+        // 特性 干燥皮肤
+        if (DRY_SKIN.equals(defensePokemon.getTokuseiVO().getName()) && WATER.equals(waza.getTypeName()))
+        {
+            return Collections.singletonList(MIN_DAMAGE_RATE);
+        }
+        // 特性 湿气
+        if (DAMP.equals(defensePokemon.getTokuseiVO().getName()) || DAMP.equals(attackPokemon.getTokuseiVO().getName()))
+        {
+            if (Arrays.asList(EXPLOSION_WAZAS).contains(waza.getName()))
+            {
+                return Collections.singletonList(MIN_DAMAGE_RATE);
+            }
+        }
+        // 特性 储水
+        if (WATER_ABSORB.equals(defensePokemon.getTokuseiVO().getName()) && WATER.equals(waza.getTypeName()))
+        {
+            return Collections.singletonList(MIN_DAMAGE_RATE);
+        }
         // B = floor(A × 会心倍率 × 天气修正)
         int damageB =
                 (int) (damageA * getCriticalHitRate(attackPokemon, isCriticalHit) * getWeatherRate(attackPokemon,
@@ -244,7 +364,8 @@ public class BattleServiceImpl implements BattleService
         // D = floor(C × 属性一致加成)
         for (int i = 0; i < possibleDamages.size(); i++)
         {
-            possibleDamages.set(i, (int) (possibleDamages.get(i) * getSameTypeCorrection(attackPokemon, waza, field)));
+            possibleDamages.set(i, (int) (possibleDamages.get(i) * getSameTypeCorrection(attackPokemon,
+                    defensePokemon, waza, field)));
         }
         // E = floor(D × 属性克制系数)
         for (int i = 0; i < possibleDamages.size(); i++)
@@ -352,6 +473,24 @@ public class BattleServiceImpl implements BattleService
                 attack *= STATS_RATE_TWO;
             }
         }
+        // 特性 毅力
+        if (GUTS.equals(attackPokemon.getTokuseiVO().getName()) && PHYSICAL_MOVE.equals(waza.getWazaTypeName()))
+        {
+            if (attackPokemon.getStatusConditionEnum() != null)
+            {
+                attack *= STATS_RATE_TWO;
+            }
+        }
+        // 特性 活力
+        if (HUSTLE.equals(attackPokemon.getTokuseiVO().getName()) && PHYSICAL_MOVE.equals(waza.getWazaTypeName()))
+        {
+            attack *= STATS_RATE_TWO;
+        }
+        // 状态 引火
+        if (attackPokemon.getIsFlashFire() && FIRE.equals(waza.getTypeName()))
+        {
+            attack *= STATS_RATE_TWO;
+        }
 
         attack = getRealStats(attack, attackLevel);
         return attack;
@@ -392,7 +531,17 @@ public class BattleServiceImpl implements BattleService
             defenseLevel = 0;
         }
 
-        defense = getRealStats(defense, defenseLevel);
+        // 特性 毛皮大衣
+        if (FUR_COAT.equals(defensePokemon.getTokuseiVO().getName()) && PHYSICAL_MOVE.equals(waza.getWazaTypeName()))
+        {
+            defense *= STATS_RATE_THREE;
+        }
+        // 特性 纯朴
+        if (!UNAWARE.equals(attackPokemon.getTokuseiVO().getName()))
+        {
+            defense = getRealStats(defense, defenseLevel);
+        }
+
         return defense;
     }
 
@@ -400,19 +549,25 @@ public class BattleServiceImpl implements BattleService
      * TODO 待完善，可能还有其他能够影响招式威力的因素没有考虑
      * 计算招式威力威力
      *
-     * @param attackPokemon 攻击方pokemon
-     * @param waza          招式
-     * @param field         场地
+     * @param attackPokemon  攻击方pokemon
+     * @param defensePokemon 防御方pokemon
+     * @param waza           招式
+     * @param field          场地
      * @return 实际威力
      */
-    private double getWazaPower(PokemonInstanceVO attackPokemon, WazaVO waza, FieldVO field)
+    private double getWazaPower(PokemonInstanceVO attackPokemon, PokemonInstanceVO defensePokemon, WazaVO waza,
+                                FieldVO field)
     {
         Optional<TokuseiVO> attackTokusei = Optional.ofNullable(attackPokemon.getTokuseiVO());
+        Optional<TokuseiVO> defenseTokusei = Optional.ofNullable(defensePokemon.getTokuseiVO());
+        Optional<ItemVO> attackItem = Optional.ofNullable(attackPokemon.getItemVO());
+        Optional<ItemVO> defenseItem = Optional.ofNullable(defensePokemon.getItemVO());
+
         TypeVO wazaType = typeDao.getTypeVOByName(waza.getTypeName());
 
         double power = waza.getPower();
 
-        if (attackTokusei.isPresent())
+        if (attackTokusei.isPresent() && defenseTokusei.isPresent())
         {
             // 特性 茂盛
             if (OVERGROW.equals(attackTokusei.get().getName()) && attackPokemon.getHpNow() <= attackPokemon.getStatsVO().getHpStats() * HP_RATE_ONE && GRASS.equals(wazaType.getName()))
@@ -448,6 +603,83 @@ public class BattleServiceImpl implements BattleService
                     power *= POWER_RATE_ONE;
                 }
             }
+            // 特性 斗争心
+            if (RIVALRY.equals(attackTokusei.get().getName()))
+            {
+                if (attackPokemon.getGender().equals(defensePokemon.getGender()) && !UNKNOWN.equals(attackPokemon.getGender()))
+                {
+                    power *= POWER_RATE_FIVE;
+                }
+                if (!UNKNOWN.equals(attackPokemon.getGender()) && !UNKNOWN.equals(defensePokemon.getGender()) && !attackPokemon.getGender().equals(defensePokemon.getGender()))
+                {
+                    power *= POWER_RATE_FOUR;
+                }
+            }
+            // 特性 强行
+            if (SHEER_FORCE.equals(attackTokusei.get().getName()) && waza.getHasSecondaryEffect() == 1)
+            {
+                power *= POWER_RATE_TWO;
+            }
+            // 特性 干燥皮肤
+            if (DRY_SKIN.equals(defenseTokusei.get().getName()) && FIRE.equals(waza.getTypeName()))
+            {
+                power *= POWER_RATE_FIVE;
+            }
+            // 特性 沙之力
+            if (SAND_FORCE.equals(attackTokusei.get().getName()) && field.getWeather() == WeatherEnum.SANDSTORM)
+            {
+                if (GROUND.equals(waza.getTypeName()) || ROCK.equals(waza.getTypeName()) || STEEL.equals(waza.getTypeName()))
+                {
+                    power *= POWER_RATE_TWO;
+                }
+            }
+            // 道具 属性宝石
+            if (attackItem.isPresent() && TYPE_GEM.equals(attackItem.get().getName()) && !STATUS_MOVE.equals(waza.getWazaTypeName()))
+            {
+                power *= POWER_RATE_TWO;
+            }
+            // 技能 杂技
+            if (ACROBATICS.equals(waza.getName()))
+            {
+                // 攻击方没有道具 或道具为属性宝石
+                boolean acrobaticsEffective =
+                        !attackItem.isPresent() || (TYPE_GEM.equals(attackItem.get().getName()) && !STATUS_MOVE.equals(waza.getWazaTypeName()));
+                if (acrobaticsEffective)
+                {
+                    power *= POWER_RATE_SIX;
+                }
+            }
+            // 特性 技术高手
+            if (TECHNICIAN.equals(attackTokusei.get().getName()) && waza.getPower() <= TECHNICIAN_EFFECTIVE_POWER)
+            {
+                // 技能 杂技
+                if (ACROBATICS.equals(waza.getName()))
+                {
+                    // 杂技威力翻倍时 技术高手不生效
+                    boolean acrobaticsEffective =
+                            !attackItem.isPresent() || (TYPE_GEM.equals(attackItem.get().getName()) && !STATUS_MOVE.equals(waza.getWazaTypeName()));
+                    if (!acrobaticsEffective)
+                    {
+                        power *= POWER_RATE_ONE;
+                    }
+                }
+            }
+            // 特性 电气皮肤
+            if (GALVANIZE.equals(attackPokemon.getTokuseiVO().getName()))
+            {
+                if (NORMAL.equals(waza.getTypeName()))
+                {
+                    power *= POWER_RATE_SEVEN;
+                }
+            }
+            // 特性 分析
+            if (ANALYTIC.equals(attackPokemon.getTokuseiVO().getName()))
+            {
+                if (defensePokemon.getStatsVO().getSpeedStats() > attackPokemon.getStatsVO().getSpeedStats())
+                {
+                    power *= POWER_RATE_TWO;
+                }
+            }
         }
 
         return power;
@@ -475,12 +707,14 @@ public class BattleServiceImpl implements BattleService
      * TODO 待完善，可能还有其他能够影响属性一致加成的因素没有考虑
      * 计算属性一致加成
      *
-     * @param attackPokemon 攻击方pokemon
-     * @param waza          攻击方使用的技能
-     * @param field         场地
+     * @param attackPokemon  攻击方pokemon
+     * @param defensePokemon 防御方pokemon
+     * @param waza           攻击方使用的技能
+     * @param field          场地
      * @return 属性一致加成
      */
-    private double getSameTypeCorrection(PokemonInstanceVO attackPokemon, WazaVO waza, FieldVO field)
+    private double getSameTypeCorrection(PokemonInstanceVO attackPokemon, PokemonInstanceVO defensePokemon,
+                                         WazaVO waza, FieldVO field)
     {
         // 属性一致加成
         boolean isSameType =
@@ -492,7 +726,9 @@ public class BattleServiceImpl implements BattleService
             res = SAME_TYPE_CORRECTION;
 
             Optional<TokuseiVO> attackTokusei = Optional.ofNullable(attackPokemon.getTokuseiVO());
-            if (attackTokusei.isPresent())
+            Optional<TokuseiVO> defenseTokusei = Optional.ofNullable(defensePokemon.getTokuseiVO());
+
+            if (attackTokusei.isPresent() && defenseTokusei.isPresent())
             {
                 // 特性 适应力
                 if (ADAPTABILITY.equals(attackTokusei.get().getName()))
@@ -622,8 +858,9 @@ public class BattleServiceImpl implements BattleService
     {
         double res = OTHER_RATE_TWO;
         Optional<TokuseiVO> attackTokusei = Optional.ofNullable(attackPokemon.getTokuseiVO());
+        Optional<TokuseiVO> defenseTokusei = Optional.ofNullable(defensePokemon.getTokuseiVO());
 
-        if (attackTokusei.isPresent())
+        if (attackTokusei.isPresent() && defenseTokusei.isPresent())
         {
             // 特性 亲子爱
             if (PARENTAL_BOND.equals(attackTokusei.get().getName()))
@@ -642,6 +879,39 @@ public class BattleServiceImpl implements BattleService
             if (SNIPER.equals(attackTokusei.get().getName()) && isCriticalHit)
             {
                 res *= OTHER_RATE_FOUR;
+            }
+            // 场地 反射壁
+            if (field.getIsReflect() && PHYSICAL_MOVE.equals(waza.getWazaTypeName()) && !isCriticalHit)
+            {
+                // 特性 穿透
+                if (!INFILTRATOR.equals(attackTokusei.get().getName()))
+                {
+                    res *= OTHER_RATE_ONE;
+                }
+            }
+            // 场地 光墙
+            if (field.getIsLightScreen() && SPECIAL_MOVE.equals(waza.getWazaTypeName()) && !isCriticalHit)
+            {
+                // 特性 穿透
+                if (!INFILTRATOR.equals(attackTokusei.get().getName()))
+                {
+                    res *= OTHER_RATE_ONE;
+                }
+            }
+        }
+        // 状态 挖洞
+        if (defensePokemon.getIsDig())
+        {
+            switch (waza.getName())
+            {
+                case "地震":
+                    res *= OTHER_RATE_FIVE;
+                    break;
+                case "震级":
+                    res *= OTHER_RATE_FIVE;
+                    break;
+                default:
+                    break;
             }
         }
 
@@ -700,7 +970,7 @@ public class BattleServiceImpl implements BattleService
     {
         double res = BURN_RATE_TWO;
         // 异常状态 灼伤
-        if (attackPokemon.getStatusConditionEnum() == StatusConditionEnum.BURN)
+        if (attackPokemon.getStatusConditionEnum() == StatusConditionEnum.BURN && !GUTS.equals(attackPokemon.getTokuseiVO().getName()))
         {
             if (PHYSICAL_MOVE.equals(waza.getWazaTypeName()) && waza.getIsKoteiWaza() == 0)
             {

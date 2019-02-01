@@ -54,6 +54,14 @@ public class BattleRequest {
     @JsonProperty(value = "attack_status_condition")
     private String attackStatusCondition;
 
+    @JsonProperty(value = "attack_gender")
+    private String attackGender;
+
+    @JsonProperty(value = "attack_is_flash_fire")
+    private Boolean attackIsFlashFire;
+    @JsonProperty(value = "attack_is_dig")
+    private Boolean attackIsDig;
+
     /**
      * 防御pokemon的数据
      */
@@ -93,6 +101,14 @@ public class BattleRequest {
 
     @JsonProperty(value = "defense_status_condition")
     private String defenseStatusCondition;
+
+    @JsonProperty(value = "defense_gender")
+    private String defenseGender;
+
+    @JsonProperty(value = "defense_is_flash_fire")
+    private Boolean defenseIsFlashFire;
+    @JsonProperty(value = "defense_is_dig")
+    private Boolean defenseIsDig;
 
     /**
      * 是否会心

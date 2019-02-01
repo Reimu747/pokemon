@@ -254,8 +254,13 @@
         </td>
     </tr>
     <tr>
-        <td>
-            <div>-</div>
+        <td align="center">
+            性别：
+            <select id="gender1">
+                <option>雌</option>
+                <option>雄</option>
+                <option>不明</option>
+            </select>
         </td>
         <td align="center">
             <input type="button" id="all_311" value="全0" onclick="setIvs1()">
@@ -284,8 +289,13 @@
         <td align="center">
             <input type="button" id="all_312" value="全0" onclick="setIvs2()">
         </td>
-        <td>
-            <div>-</div>
+        <td align="center">
+            性别：
+            <select id="gender2">
+                <option>雌</option>
+                <option>雄</option>
+                <option>不明</option>
+            </select>
         </td>
     </tr>
     <tr>
@@ -384,16 +394,24 @@
             <select id="status_conditions1">
                 <option>正常</option>
                 <option>灼伤</option>
+                <option>中毒</option>
+                <option>麻痹</option>
+                <option>睡眠</option>
+                <option>冰冻</option>
             </select>
         </td>
 
-        <td align="center">状态</td>
+        <td align="center" rowspan="2">状态</td>
 
         <td align="center">
             异常状态：
             <select id="status_conditions2">
                 <option>正常</option>
                 <option>灼伤</option>
+                <option>中毒</option>
+                <option>麻痹</option>
+                <option>睡眠</option>
+                <option>冰冻</option>
             </select>
         </td>
         <td align="center">
@@ -437,7 +455,16 @@
             </select>
         </td>
     </tr>
-
+    <tr>
+        <td align="center" colspan="5">
+            <input id="is_flash_fire1" type="checkbox">引火
+            <input id="is_dig1" type="checkbox">挖洞
+        </td>
+        <td align="center" colspan="5">
+            <input id="is_flash_fire2" type="checkbox">引火
+            <input id="is_dig2" type="checkbox">挖洞
+        </td>
+    </tr>
     <tr>
         <td align="center" colspan="4">
             <input type="radio" name="terrain" value="0" checked>无场地
@@ -785,6 +812,9 @@
         var attack_attack_ability_level = $("#attack_ability_level1").val();
         var attack_special_attack_ability_level = $("#special_attack_ability_level1").val();
         var attack_status_condition = $("#status_conditions1").val();
+        var attack_gender = $("#gender1").val();
+        var attack_is_flash_fire = $("#is_flash_fire1").is(":checked");
+        var attack_is_dig = $("#is_dig1").is(":checked");
 
         // 防守方pokemon
         var defense_name = $("#name2").text();
@@ -802,6 +832,9 @@
         var defense_defense_ability_level = $("#defense_ability_level2").val();
         var defense_special_defense_ability_level = $("#special_defense_ability_level2").val();
         var defense_status_condition = $("#status_conditions2").val();
+        var defense_gender = $("#gender2").val();
+        var defense_is_flash_fire = $("#is_flash_fire2").is(":checked");
+        var defense_is_dig = $("#is_dig2").is(":checked");
 
         // 是否会心
         var is_ct = $("#is_ct1").is(":checked");
@@ -835,6 +868,9 @@
                 "attack_ability_level": attack_attack_ability_level,
                 "special_attack_ability_level": attack_special_attack_ability_level,
                 "attack_status_condition": attack_status_condition,
+                "attack_gender": attack_gender,
+                "attack_is_flash_fire": attack_is_flash_fire,
+                "attack_is_dig": attack_is_dig,
                 "defense_pokemon_name": defense_name,
                 "defense_hp_stats": defense_hp_stats,
                 "defense_attack_stats": defense_attack_stats,
@@ -850,6 +886,9 @@
                 "defense_ability_level": defense_defense_ability_level,
                 "special_defense_ability_level": defense_special_defense_ability_level,
                 "defense_status_condition": defense_status_condition,
+                "defense_gender": defense_gender,
+                "defense_is_flash_fire": defense_is_flash_fire,
+                "defense_is_dig": defense_is_dig,
                 "is_critical_hit": is_ct,
                 "terrain_index": terrain_index,
                 "weather_index": weather_index,

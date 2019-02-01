@@ -81,5 +81,15 @@ public class PokemonInstanceVO extends PokemonVO
      */
     private Integer hpNow;
 
+    /**
+     * 性别
+     */
+    private String gender;
+
     // TODO 状态数组(充电等)、其他能力能级
+    /**
+     * 状态
+     */
+    private Boolean isFlashFire;
+    private Boolean isDig;
 }

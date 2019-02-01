@@ -21,7 +21,8 @@ public interface WazaDao
      * @return 所有招式的列表
      */
     @Select(value = "SELECT waza.name, type.name AS typeName, waza.power, waza.hit_rate AS hitRate, waza_type.name " +
-            "AS wazaTypeName, waza.is_direct_attack AS isDirectAttack, waza.is_kotei_waza AS isKoteiWaza\n" +
+            "AS wazaTypeName, waza.is_direct_attack AS isDirectAttack, waza.is_kotei_waza AS isKoteiWaza, waza" +
+            ".has_secondary_effect AS hasSecondaryEffect, waza.is_sound AS isSound\n" +
             "FROM waza\n" +
             "INNER JOIN type ON waza.type_id = type.id\n" +
             "INNER JOIN waza_type ON waza.waza_type_id = waza_type.id")
@@ -34,7 +35,8 @@ public interface WazaDao
      * @return 对应招式
      */
     @Select(value = "SELECT waza.name, type.name AS typeName, waza.power, waza.hit_rate AS hitRate, waza_type.name " +
-            "AS wazaTypeName, waza.is_direct_attack AS isDirectAttack, waza.is_kotei_waza AS isKoteiWaza\n" +
+            "AS wazaTypeName, waza.is_direct_attack AS isDirectAttack, waza.is_kotei_waza AS isKoteiWaza, waza" +
+            ".has_secondary_effect AS hasSecondaryEffect, waza.is_sound AS isSound\n" +
             "FROM waza\n" +
             "INNER JOIN type ON waza.type_id = type.id\n" +
             "INNER JOIN waza_type ON waza.waza_type_id = waza_type.id\n" +
